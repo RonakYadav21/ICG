@@ -25,7 +25,7 @@ const Login = () => {
   const submitHandler = async (e) => {
     e.preventDefault();
     try {
-      const res = await axios.post(`${API_URL}/login`, formData);
+      const res = await axios.post(`${API_URL}/auth/login`, formData);
       const data = await res.data;
       login(data.token);
       toast.success("Login successfully!");

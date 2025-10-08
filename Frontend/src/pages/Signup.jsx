@@ -26,7 +26,7 @@ const Signup = () => {
 
     console.log({ formData: formData });
     try {
-      await axios.post(`${API_URL}/signup`, formData);
+      await axios.post(`${API_URL}/auth/signup`, formData);
       toast.success("account created successfully!");
       navigate("/login");
     } catch (err) {
