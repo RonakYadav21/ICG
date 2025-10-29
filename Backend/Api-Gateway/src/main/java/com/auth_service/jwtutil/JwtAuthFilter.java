@@ -15,6 +15,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class JwtAuthFilter implements GatewayFilter {
 
+	
 	@Autowired
 	private JwtUtil jwtUtil;
 	
