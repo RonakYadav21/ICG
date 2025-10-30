@@ -1,51 +1,35 @@
-package com.auth_service.jwtutil;
+package com.auth_service.util;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cloud.gateway.filter.GatewayFilter;
-import org.springframework.cloud.gateway.filter.GatewayFilterChain;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.server.reactive.ServerHttpRequest;
-import org.springframework.web.server.ServerWebExchange;
-
-import io.jsonwebtoken.Claims;
-import jakarta.ws.rs.core.HttpHeaders;
-import reactor.core.publisher.Mono;
+import java.security.Key;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.SignatureAlgorithm;
+import io.jsonwebtoken.security.Keys;
+import org.springframework.beans.factory.annotation.Value;
 
 @Component
-public class JwtAuthFilter implements GatewayFilter {
-
-	
-	@Autowired
-	private JwtUtil jwtUtil;
-	
-	public Mono<Void> filter(ServerWebExchange exchange, GatewayFilterChain chain){
-		String path=exchange.getRequest().getURI().getPath();
-		if(path.contains("/signup")|| path.contains("/login")||path.startsWith("/auth/")) {
-			return chain.filter(exchange); //return to next filter
-		}
-		String authHeader=exchange.getRequest().getHeaders().getFirst(HttpHeaders.AUTHORIZATION);
-		if(authHeader==null || !authHeader.startsWith("Bearer")) {
-				exchange.getResponse().setStatusCode(HttpStatus.UNAUTHORIZED);
-				return exchange.getResponse().setComplete();
-		}
-		
-		String token = authHeader.substring(7);
-		if(!jwtUtil.isTokenValid(token)) {
-			exchange.getResponse().setStatusCode(HttpStatus.UNAUTHORIZED);
-			return exchange.getResponse().setComplete();
-		}
-		 Claims claims = jwtUtil.extractAllClaims(token);
-		 String role=claims.get("role",String.class);
-		 if((path.startsWith("/Student")&&!role.equals("ROLE_STUDENT"))||(path.startsWith("/Admin/") && !role.equals("ROLE_ADMIN"))) {
-			 exchange.getResponse().setStatusCode(HttpStatus.FORBIDDEN);
-	            return exchange.getResponse().setComplete();
-}
-		 ServerHttpRequest modifiedRequest = exchange
-				 .getRequest()
-				 .mutate()
-				 .header("X-User-Email", claims.getSubject())
-				 .header("X-User-Role", role).build();
-		 return chain.filter(exchange.mutate().request(modifiedRequest).build());
-}
+public class JwtUtil {
+    // Generate secret key after bean construction
+	  @Value("${jwt.secret}")
+	    private String secretKey; 
+    public String generateToken(UserDetails userDetails) {
+        Map<String, Object> claims = new HashMap<>();
+        // You can store more details here if needed
+        claims.put("role", userDetails.getAuthorities().iterator().next().getAuthority()); // single role
+        return Jwts.builder()
+                .setClaims(claims)
+                .setSubject(userDetails.getUsername())
+                .setIssuedAt(new Date(System.currentTimeMillis()))
+                .setExpiration(new Date(System.currentTimeMillis() + 1000 * 60 * 60)) // 1 hour
+                .signWith(getSigningKey(), SignatureAlgorithm.HS256)
+                .compact();
+    }
+    private Key getSigningKey() {
+        byte[] keyBytes = secretKey.getBytes(); // Or decode if you're storing base64
+        return Keys.hmacShaKeyFor(keyBytes);
+    }
 }
