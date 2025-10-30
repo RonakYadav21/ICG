@@ -45,6 +45,14 @@ const Sidebar = () => {
         >
           Contact Us
         </NavLink>
+        <NavLink
+          to="/admin-dashboard"
+          className={({ isActive }) =>
+            `${linkClasses} ${isActive ? activeClasses : ""}`
+          }
+        >
+          Admin Dashboard
+        </NavLink>
       </nav>
     </div>
   );

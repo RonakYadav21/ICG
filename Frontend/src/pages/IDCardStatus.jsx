@@ -9,7 +9,7 @@ const IDCardStatus = () => {
   const [student, setStudent] = useState(null);
   const [loading, setLoading] = useState(false);
 
-  // Check student ID card status
+  // Check student ID card status (NOT currently used)
   const checkStatus = async (e) => {
     e.preventDefault();
     if (!email) return toast.error("Please enter your email");
