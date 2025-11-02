@@ -1,16 +1,14 @@
+# Use lightweight Java 17 runtime
 FROM eclipse-temurin:17-jdk-alpine
 
-# Install Maven
-RUN apk add --no-cache maven
-
-# Set workdir
+# Set working directory inside container
 WORKDIR /app
 
-# Copy everything
-COPY . .
+# Copy JAR file from target folder to container
+COPY target/*.jar app.jar
 
-# Build the app (downloads dependencies and builds jar)
-RUN mvn clean package -DskipTests
+# Expose the port your Spring Boot app runs on
+EXPOSE 8761
 
 # Run the jar
-CMD ["java", "-jar", "target/ServiceRegistry-0.0.1-SNAPSHOT.jar"]
+ENTRYPOINT ["java", "-jar", "app.jar"]

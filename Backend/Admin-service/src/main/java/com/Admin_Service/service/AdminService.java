@@ -6,15 +6,15 @@ import org.springframework.stereotype.Service;
 
 import com.Admin_Service.DTO.RegisterAuthUserRequest;
 import com.Admin_Service.Entity.Admin;
-import com.Admin_Service.client.AuthServiceClient;
+import com.Admin_Service.client.AuthClient;
 import com.Admin_Service.repository.AdminRepository;
-
+@Service
 public class AdminService {
 	@Autowired
 	private AdminRepository adminrepo;
 
 	@Autowired
-	 private AuthServiceClient authServiceClient;
+	 private AuthClient authServiceClient;
 
 	public Admin Register(Admin admin) {
 		 Admin savedadmin=	adminrepo.save(admin);

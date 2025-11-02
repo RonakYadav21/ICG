@@ -1,0 +1,13 @@
+com\TemplateService\DTO\TemplateRequestDTO.class
+com\TemplateService\TemplateServiceApplication.class
+com\TemplateService\Service\IDCardTemplateService.class
+com\TemplateService\DTO\StudentDTO.class
+com\TemplateService\Repository\IDCardTemplateRepository.class
+com\TemplateService\Service\TemplateFillerService.class
+com\TemplateService\convertor\JsonConverter$1.class
+com\TemplateService\Controller\IDCardTemplateController.class
+com\TemplateService\convertor\JsonConverter.class
+com\TemplateService\Entity\IDCardTemplate.class
+com\TemplateService\Entity\IDCardTemplate$IDCardTemplateBuilder.class
+com\TemplateService\DTO\FilledTemplateDTO.class
+com\TemplateService\feing\StudentClient.class

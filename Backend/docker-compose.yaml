@@ -1,45 +1,58 @@
-version: '3.8'
-
+version: "3.8"
 services:
-  serviceregistry:
-    build:
-      context: ./ServiceRegistry
-    container_name: serviceregistry
+  service-registry:
+    build: ./service-registry
+    container_name: service-registry
     ports:
       - "8761:8761"
 
   api-gateway:
-    build:
-      context: ./Api-Gateway
+    build: ./api-gateway
     container_name: api-gateway
     ports:
       - "8080:8080"
     depends_on:
-      - serviceregistry
+      - service-registry
+    environment:
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://service-registry:8761/eureka/
 
   auth-service:
-    build:
-      context: ./Auth-Service
+    build: ./auth-service
     container_name: auth-service
     ports:
       - "8088:8088"
     depends_on:
-      - serviceregistry
+      - service-registry
+    environment:
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://service-registry:8761/eureka/
+
+  admin-service:
+    build: ./admin-service
+    container_name: admin-service
+    ports:
+      - "8087:8087"
+    depends_on:
+      - service-registry
+      - auth-service
+    environment:
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://service-registry:8761/eureka/
 
   student-service:
-    build:
-      context: ./Student-Service
+    build: ./student-service
     container_name: student-service
     ports:
       - "8081:8081"
     depends_on:
-      - serviceregistry
+      - service-registry
+    environment:
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://service-registry:8761/eureka/
 
   template-service:
-    build:
-      context: ./Template-Service
+    build: ./template-service
     container_name: template-service
     ports:
       - "8084:8084"
     depends_on:
-      - serviceregistry
+      - service-registry
+    environment:
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://service-registry:8761/eureka/
