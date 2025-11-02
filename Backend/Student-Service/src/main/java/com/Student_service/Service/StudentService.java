@@ -1,6 +1,7 @@
 package com.Student_service.Service;
 
 import org.springframework.stereotype.Service;
+import java.util.List;
 
 import com.Student_service.Entity.Student;
 import com.Student_service.repository.StudentRepository;
@@ -15,15 +16,22 @@ public class StudentService {
     }
 
     public Student registerStudent(Student student) {
-        // Set default values
         student.setStatus("Pending");
         student.setDigitalCardUrl("");
-
-        // The studentPhoto is already provided as a URL from frontend
         return studentRepository.save(student);
     }
 
     public boolean isStudentRegistered(String email) {
         return studentRepository.findByEmailAddress(email).isPresent();
     }
+
+    public List<Student> getStudentsByCourse(String course) {
+        return studentRepository.findByProgramNameIgnoreCase(course);
+    }
+
+	public List<Student> getStudentsByCourseId(Long courseId) {
+		// TODO Auto-generated method stub
+		return studentRepository.findByCourseId(courseId);
+				}
+	
 }

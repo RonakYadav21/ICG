@@ -48,9 +48,13 @@ public class Student {
     @Column(name = "admission_batch", nullable = false, length = 20)
     private String admissionBatch;
 
+    // ✅ Add courseId column
+    @Column(name = "course_id", nullable = false)
+    private Long courseId;
+
     // Other Details
     @Column(name = "student_photo", nullable = false, length = 500)
-    private String studentPhoto; // store Cloudinary URL
+    private String studentPhoto; // Cloudinary URL
 
     @Column(name = "status", nullable = false, length = 20)
     private String status = "Pending"; // default value

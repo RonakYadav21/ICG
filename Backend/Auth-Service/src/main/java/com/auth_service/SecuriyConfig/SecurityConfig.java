@@ -39,7 +39,9 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http.csrf(csrf -> csrf.disable())
             .authorizeHttpRequests(auth -> auth  //The first auth is the parameter passed into the lambda   The second auth is calling methods like .requestMatchers()
-            		   .requestMatchers("/auth/register", "/auth/login").permitAll()  
+            		   .requestMatchers("/auth/register", "/auth/login",  "/swagger-ui/**",
+                               "/v3/api-docs/**",
+                               "/swagger-resources/**").permitAll()  
             		   .anyRequest().authenticated()
             )
             .userDetailsService(userDetailsService)

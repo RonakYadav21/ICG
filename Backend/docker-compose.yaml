@@ -1,0 +1,45 @@
+version: '3.8'
+
+services:
+  serviceregistry:
+    build:
+      context: ./ServiceRegistry
+    container_name: serviceregistry
+    ports:
+      - "8761:8761"
+
+  api-gateway:
+    build:
+      context: ./Api-Gateway
+    container_name: api-gateway
+    ports:
+      - "8080:8080"
+    depends_on:
+      - serviceregistry
+
+  auth-service:
+    build:
+      context: ./Auth-Service
+    container_name: auth-service
+    ports:
+      - "8088:8088"
+    depends_on:
+      - serviceregistry
+
+  student-service:
+    build:
+      context: ./Student-Service
+    container_name: student-service
+    ports:
+      - "8081:8081"
+    depends_on:
+      - serviceregistry
+
+  template-service:
+    build:
+      context: ./Template-Service
+    container_name: template-service
+    ports:
+      - "8084:8084"
+    depends_on:
+      - serviceregistry
