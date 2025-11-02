@@ -6,14 +6,17 @@ import org.springframework.stereotype.Service;
 import com.TemplateService.DTO.TemplateRequestDTO;
 import com.TemplateService.Entity.IDCardTemplate;
 import com.TemplateService.Repository.IDCardTemplateRepository;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 @Service
 public class IDCardTemplateService {
 
     private final IDCardTemplateRepository templateRepository;
+    private final ObjectMapper objectMapper = new ObjectMapper(); // ✅ add this
 
     public IDCardTemplateService(IDCardTemplateRepository templateRepository) {
         this.templateRepository = templateRepository;
@@ -48,17 +51,29 @@ public class IDCardTemplateService {
         templateRepository.deleteById(id);
     }
     public IDCardTemplate saveTemplate(TemplateRequestDTO dto) {
-        IDCardTemplate template = IDCardTemplate.builder()
-                .name(dto.getName())
-                .width(dto.getWidth())
-                .height(dto.getHeight())
-                .backgroundColor(dto.getBackgroundColor())
-                .borderColor(dto.getBorderColor())
-                .borderWidth(dto.getBorderWidth())
-                .elementsJson(dto.getElementsJson())
-                .meta(dto.getMeta())
-                .build();
+        try {
+            // Convert JSON string to Map
+            Map<String, Object> elementsMap = objectMapper.readValue(
+                    dto.getElementsJson(), Map.class);
 
-        return templateRepository.save(template);
+            Map<String, Object> metaMap = objectMapper.readValue(
+                    dto.getMeta(), Map.class);
+
+            IDCardTemplate template = IDCardTemplate.builder()
+                    .name(dto.getName())
+                    .width(dto.getWidth())
+                    .height(dto.getHeight())
+                    .backgroundColor(dto.getBackgroundColor())
+                    .borderColor(dto.getBorderColor())
+                    .borderWidth(dto.getBorderWidth())
+                    .elementsJson(elementsMap)
+                    .meta(metaMap)
+                    .build();
+
+            return templateRepository.save(template);
+
+        } catch (Exception e) {
+            throw new RuntimeException("Failed to parse JSON fields: " + e.getMessage(), e);
+        }
     }
 }

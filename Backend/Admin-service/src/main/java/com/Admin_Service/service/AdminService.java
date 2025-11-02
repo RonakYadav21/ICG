@@ -1,0 +1,30 @@
+package com.Admin_Service.service;
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import com.Admin_Service.DTO.RegisterAuthUserRequest;
+import com.Admin_Service.Entity.Admin;
+import com.Admin_Service.client.AuthServiceClient;
+import com.Admin_Service.repository.AdminRepository;
+
+public class AdminService {
+	@Autowired
+	private AdminRepository adminrepo;
+
+	@Autowired
+	 private AuthServiceClient authServiceClient;
+
+	public Admin Register(Admin admin) {
+		 Admin savedadmin=	adminrepo.save(admin);
+		  RegisterAuthUserRequest authUser = new RegisterAuthUserRequest();
+		    authUser.setUsername(admin.getEmail());
+		    authUser.setPassword(admin.getPassword());
+		    authUser.setRole("ROLE_ADMIN");
+		    authServiceClient.registerUser(authUser);
+			return savedadmin;
+		}
+
+	
+}

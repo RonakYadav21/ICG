@@ -27,7 +27,8 @@ public class TemplateFillerService {
     // Fill template for one student
     public FilledTemplateDTO fillTemplateForStudent(IDCardTemplate template, StudentDTO student) {
         try {
-            JsonNode root = objectMapper.readTree(template.getElementsJson());
+            // Convert Map -> JSON string -> JsonNode
+            JsonNode root = objectMapper.readTree(objectMapper.writeValueAsString(template.getElementsJson()));
             String jsonString = root.toString();
             jsonString = replacePlaceholders(jsonString, student);
             return new FilledTemplateDTO(student.getId(), jsonString);
