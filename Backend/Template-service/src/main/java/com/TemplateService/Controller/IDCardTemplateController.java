@@ -1,18 +1,12 @@
 package com.TemplateService.Controller;
-
-
-
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
 import com.TemplateService.DTO.FilledTemplateDTO;
 import com.TemplateService.DTO.TemplateRequestDTO;
 import com.TemplateService.Entity.IDCardTemplate;
 import com.TemplateService.Service.IDCardTemplateService;
 import com.TemplateService.Service.TemplateFillerService;
-
 import java.util.List;
-
 @RestController
 @RequestMapping("/templates")
 public class IDCardTemplateController {

@@ -12,7 +12,10 @@ public class CorsConfig {
     @Bean
     public CorsWebFilter corsWebFilter() {
         CorsConfiguration config = new CorsConfiguration();
+        // ✅ Use exact domain without trailing slash
+        config.addAllowedOrigin("https://icgiips.vercel.app");
         config.addAllowedOrigin("http://localhost:5173");
+        
         config.addAllowedMethod("*");
         config.addAllowedHeader("*");
         config.setAllowCredentials(true);
