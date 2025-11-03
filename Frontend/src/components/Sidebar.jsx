@@ -19,14 +19,14 @@ const Sidebar = () => {
           Student Registration
         </NavLink>
 
-        <NavLink
+        {/* <NavLink
           to="/id-card-status"
           className={({ isActive }) =>
             `${linkClasses} ${isActive ? activeClasses : ""}`
           }
         >
           ID Card Status
-        </NavLink>
+        </NavLink> */}
 
         <NavLink
           to="/about"

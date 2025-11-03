@@ -1,15 +1,15 @@
 import axios from "axios";
 import { useState } from "react";
-import { useAuth } from "../context/authContext";
+import { useAuth } from "../context/AuthContext";
 import toast from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
 
 const Login = () => {
   const API_URL =
-    import.meta.env.VITE_BACKEND_URL || "http://localhost:5000/api";
+    import.meta.env.VITE_BACKEND_URL || "http://localhost:8080/api";
 
   const { login } = useAuth();
-  const navigate = useNavigate();
+  const navigate = useNavigate();``
   const [formData, setFormData] = useState({
     email: "",
     password: "",

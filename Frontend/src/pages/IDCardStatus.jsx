@@ -3,7 +3,7 @@ import axios from "axios";
 import toast from "react-hot-toast";
 
 const IDCardStatus = () => {
-  const API_URL = import.meta.env.VITE_BACKEND_URL || "http://localhost:5000/api";
+  const API_URL = import.meta.env.VITE_BACKEND_URL || "http://localhost:8080/api";
 
   const [email, setEmail] = useState("");
   const [student, setStudent] = useState(null);

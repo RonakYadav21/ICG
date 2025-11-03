@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 
 const StudentDashboard = () => {
-  const API_URL = import.meta.env.VITE_BACKEND_URL || "http://localhost:5000/api";
+  const API_URL = import.meta.env.VITE_BACKEND_URL || "http://localhost:8080/api";
   const CLOUD_NAME = import.meta.env.VITE_CLOUDINARY_CLOUD_NAME;
   const UPLOAD_PRESET = import.meta.env.VITE_CLOUDINARY_UPLOAD_PRESET;
 

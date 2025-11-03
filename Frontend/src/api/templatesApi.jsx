@@ -11,6 +11,19 @@ export const saveTemplate = async (templateData) => {
   }
 };
 
+export const getAllTemplates = async () => {
+  try {
+    const res = await api.get(`/templates`);
+    return res.data || [];
+  } catch (error) {
+    const msg =
+      error.response?.data?.message ||
+      error.message ||
+      "Failed to fetch templates";
+    throw new Error(msg);
+  }
+};
+
 export const getTemplateById = async (id) => {
   try {
     const res = await api.get(`/templates/${id}`);

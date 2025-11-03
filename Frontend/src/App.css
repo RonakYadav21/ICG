@@ -1,1 +1,27 @@
 @import "tailwindcss";
+
+@theme {
+  /* Brand Colors */
+  --color-primary: #dd6031;
+  --color-secondary: #eabe7c;
+
+  /* Headings */
+  --color-heading: #311e10;
+
+  /* Logo Colors */
+  --color-logo-primary: #dd6031;
+  --color-logo-yellow: #ffc300;
+  --color-logo-green: #ccdecc;
+  --color-logo-shadow: #dd6031;
+
+  /* Tab + Outline */
+  --color-tab: #d9d9d9;
+  --color-outline: #808080;
+
+  /* Fonts */
+  --font-heading: "Merriweather", serif;
+  --font-body: "Open Sans", sans-serif;
+
+  /* Gradient */
+  --bg-gradient: linear-gradient(180deg, #ffeacc 60%, #ffffff 100%);
+}
