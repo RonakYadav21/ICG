@@ -32,7 +32,7 @@ public class GatewayRoutes {
 				.route("Student-Service", r -> r.path("/student/**")
 				        .uri("https://student-service-wdtt.onrender.com"))
 				.route("Admin-Service", r -> r.path("/Admin/**")
-				        .uri("https://admin-service-43zb.onrender.com"));
+				        .uri("https://admin-service-43zb.onrender.com"))
 				
 				
 				
