@@ -9,7 +9,8 @@ const Login = () => {
     import.meta.env.VITE_BACKEND_URL || "http://localhost:8080/api";
 
   const { login } = useAuth();
-  const navigate = useNavigate();``
+  const navigate = useNavigate();
+  ``;
   const [formData, setFormData] = useState({
     email: "",
     password: "",
@@ -25,7 +26,7 @@ const Login = () => {
   const submitHandler = async (e) => {
     e.preventDefault();
     try {
-      const res = await axios.post(`${API_URL}/auth/login`, formData);
+      const res = await axios.post(`${API_URL}/api/auth/login`, formData);
       const data = await res.data;
       login(data.token);
       toast.success("Login successfully!");
