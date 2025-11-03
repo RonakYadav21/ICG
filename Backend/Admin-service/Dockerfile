@@ -1,14 +1,17 @@
-# Use lightweight Java 17 runtime
-FROM eclipse-temurin:17-jdk-alpine
-
-# Set working directory inside container
+# Use Maven with JDK to build the app
+FROM eclipse-temurin:17-jdk-alpine AS builder
 WORKDIR /app
 
-# Copy JAR file from target folder to container
-COPY target/*.jar app.jar
+# Copy Maven project files
+COPY pom.xml .
+COPY src ./src
 
-# Expose the port your Spring Boot app runs on
+# Build the JAR inside the container
+RUN apk add --no-cache maven && mvn clean package -DskipTests
+
+# Run stage
+FROM eclipse-temurin:17-jre-alpine
+WORKDIR /app
+COPY --from=builder /app/target/*.jar app.jar
 EXPOSE 8087
-
-# Run the jar
 ENTRYPOINT ["java", "-jar", "app.jar"]
