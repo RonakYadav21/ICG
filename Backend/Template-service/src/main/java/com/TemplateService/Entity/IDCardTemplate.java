@@ -20,11 +20,12 @@ public class IDCardTemplate {
     private String borderColor;
     private Integer borderWidth;
     // ✅ Keep only this one for JSONB
-    @Column(name = "elements_json", columnDefinition = "jsonb")
-    @Convert(converter = JsonConverter.class)
-    private Map<String, Object> elementsJson;
-
-    @Column(columnDefinition = "jsonb")
-    @Convert(converter = JsonConverter.class)
-    private Map<String, Object> meta;
+//    @Column(name = "elements_json", columnDefinition = "jsonb")
+//    @Convert(converter = JsonConverter.class)
+    @Column(columnDefinition = "TEXT")
+    private String elementsJson;
+    
+    @Column(columnDefinition = "TEXT")
+//    @Convert(converter = JsonConverter.class)
+    private String meta;
 }

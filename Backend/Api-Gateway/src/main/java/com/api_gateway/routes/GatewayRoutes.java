@@ -18,13 +18,13 @@ public class GatewayRoutes {
 	public RouteLocator routes(RouteLocatorBuilder builder) {
 		return builder.routes()
 				//public routing
-//	   .route("Auth-Service",r->r.path("/auth/**").uri("lb://AUTH-SERVICE"))
-//	   .route("template-Service",r->r.path("/templates/**").uri("lb://TEMPLATE-SERVICE"))
-//	   .route("Student",r->r.path("/student/studentRegistration").uri("lb://STUDENT-SERVICE"))
+//   .route("Auth-Service",r->r.path("/auth/**").uri("lb://AUTH-SERVICE"))
+//	   .route("template-Service",r->r.path("/templates/").uri("lb://TEMPLATE-SERVICE"))
+//   .route("Student",r->r.path("/student/studentRegistration").uri("lb://STUDENT-SERVICE"))
 //   .route("Admin-Signup", r -> r.path("/Admin/signup")
 //		   .uri("lb://ADMIN-SERVICE"))
 //	   
-				
+//				
 				.route("Auth-Service", r -> r.path("/auth/**")
 				        .uri("https://auth-service-q7g9.onrender.com"))
 				.route("Template-Service", r -> r.path("/templates/**")

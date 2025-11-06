@@ -52,12 +52,12 @@ public class IDCardTemplateService {
     }
     public IDCardTemplate saveTemplate(TemplateRequestDTO dto) {
         try {
-            // Convert JSON string to Map
-            Map<String, Object> elementsMap = objectMapper.readValue(
-                    dto.getElementsJson(), Map.class);
-
-            Map<String, Object> metaMap = objectMapper.readValue(
-                    dto.getMeta(), Map.class);
+//            // Convert JSON string to Map
+//            Map<String, Object> elementsMap = objectMapper.readValue(
+//                    dto.getElementsJson(), Map.class);
+//
+//            Map<String, Object> metaMap = objectMapper.readValue(
+//                    dto.getMeta(), Map.class);
 
             IDCardTemplate template = IDCardTemplate.builder()
                     .name(dto.getName())
@@ -66,10 +66,12 @@ public class IDCardTemplateService {
                     .backgroundColor(dto.getBackgroundColor())
                     .borderColor(dto.getBorderColor())
                     .borderWidth(dto.getBorderWidth())
-                    .elementsJson(elementsMap)
-                    .meta(metaMap)
+                    .elementsJson(dto.getElementsJson())
+                    .meta(dto.getMeta())
                     .build();
-
+            System.out.println(template);
+            System.out.println(dto.getElementsJson());
+            
             return templateRepository.save(template);
 
         } catch (Exception e) {
