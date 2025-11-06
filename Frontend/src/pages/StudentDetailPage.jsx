@@ -2,38 +2,38 @@ import React from "react";
 import api from "../utils/axios";
 const StudentDetailPage = () => {
   const StudentHandler = (e) => {
-    api.get(`/students/by-course/${e}`).then((res) => {
-        console.log(res.data);
-    })
-    
+    api.get(`/student/by-course/${e}`).then((res) => {
+      console.long("getting course...");
+      console.log(res);
+    });
   };
   return (
     <div>
-      <ul className="flex gap-4">
+      <ul className="flex gap-4 cursor-pointer">
         <li
           onClick={() => {
-            StudentHandler("MTech-IT");
+            StudentHandler("001");
           }}
         >
           MTech-IT
         </li>
         <li
           onClick={() => {
-            StudentHandler("MTech-IT");
+            StudentHandler("002");
           }}
         >
           MTech-CS
         </li>
         <li
           onClick={() => {
-            StudentHandler("Mca");
+            StudentHandler("003");
           }}
         >
           MCA
         </li>
         <li
           onClick={() => {
-            StudentHandler("Bcom");
+            StudentHandler("004");
           }}
         >
           BCOM

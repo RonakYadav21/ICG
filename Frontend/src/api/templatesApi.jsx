@@ -1,14 +1,21 @@
 import api from "../utils/axios";
 
-export const saveTemplate = async (templateData) => {
-  try {
-    const res = await api.post("/templates", templateData);
-    return res.data;
-  } catch (err) {
-    const msg =
-      err.response?.data?.message || err.message || "Failed to save template";
-    throw new Error(msg);
-  }
+export const saveTemplate = async (template) => {
+  console.log("saving template....");
+  console.log(template);
+  const payload = {
+    name: template.name,
+    width: template.width,
+    height: template.height,
+    backgroundColor: template.backgroundColor,
+    borderColor: template.borderColor,
+    borderWidth: template.borderWidth,
+    elementsJson: JSON.stringify(template.elements),
+    meta: JSON.stringify(template.meta),
+  };
+
+  const res = await api.post(`/templates/save`, payload);
+  return res.data;
 };
 
 export const getAllTemplates = async () => {

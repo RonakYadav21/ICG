@@ -40,6 +40,13 @@ export default function IdCardEditor({ initialTemplate }) {
     generating: false,
   });
   const [isGenerating, setIsGenerating] = useState(false);
+  useEffect(() => {
+    if (initialTemplate) {
+      setTemplate(initialTemplate);
+      setElements(initialTemplate.elements || []);
+      setTemplateName(initialTemplate.name);
+    }
+  }, [initialTemplate]);
 
   useEffect(() => {
     console.log(prevTemplateRef.current);
@@ -350,27 +357,34 @@ export default function IdCardEditor({ initialTemplate }) {
       setLoading((prev) => ({ ...prev, saving: true }));
 
       const templateData = {
-        ...template,
         name: templateName,
+        width: template.width,
+        height: template.height,
+        backgroundColor: template.backgroundColor,
+        borderColor: template.borderColor,
+        borderWidth: template.borderWidth,
+
         elements: elements.map((el) => ({
           ...el,
           props:
             el.type === "image"
               ? {
                   ...el.props,
-                  // Ensure image URLs are absolute
                   src: el.props.src.startsWith("http")
                     ? el.props.src
                     : `${import.meta.env.VITE_BACKEND_URL}${el.props.src}`,
                 }
               : el.props,
         })),
+
+        meta: template.meta || {},
       };
 
       const saved = await saveTemplate(templateData);
-      // update local template state with saved document (includes _id, timestamps)
+
       setTemplate(saved);
-      setTemplateName(saved.name || templateName);
+      setTemplateName(saved?.name || templateName);
+
       alert("Template saved successfully!");
       return saved;
     } catch (err) {

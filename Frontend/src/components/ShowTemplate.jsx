@@ -16,17 +16,16 @@ const ShowTemplate = () => {
   }, []);
 
   const [template, setTemplate] = useState([]);
+  console.log(template);
   return (
     <div>
       {template ? (
         template.map((temp) => (
-          <div key={temp._id} className="border p-4 my-2">
-            <h3 className="text-lg font-bold mb-2">{temp.name}</h3>
-            <img
-              src={temp.imageUrl}
-              alt={temp.name}
-              className="w-full h-auto"
-            />
+          <div key={temp.id} className="border p-4 my-2">
+            <div key={temp.id} className="border p-4 my-2">
+              <h3 className="text-lg font-bold mb-2">{temp.name}</h3>
+              <pre>{temp.elements}</pre>
+            </div>
           </div>
         ))
       ) : (
