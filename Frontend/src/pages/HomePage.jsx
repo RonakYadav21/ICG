@@ -1,7 +1,7 @@
 import { useNavigate } from "react-router-dom";
 import Footer from "../components/UI/Footer";
 import Navbar from "../components/UI/Navbar";
-
+import id_card from "../assets/id_cards.png";
 const HomePage = () => {
   const navigate = useNavigate();
   return (
@@ -56,7 +56,7 @@ const HomePage = () => {
 
         {/* RIGHT COLUMN */}
         <div className="w-full md:w-1/2 flex justify-center relative">
-          <img src="../../public/id_cards.png" alt="id" className="" />
+          <img src={id_card} alt="id" className="" />
         </div>
       </div>
 

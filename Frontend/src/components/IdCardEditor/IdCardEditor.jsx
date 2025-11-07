@@ -21,6 +21,9 @@ import {
   getStudentsByCourse,
 } from "../../api/templatesApi";
 
+import { FaEdit, FaUsers } from "react-icons/fa";
+import { useNavigate } from "react-router-dom";
+
 const uid = () => Math.random().toString(36).slice(2, 9);
 
 export default function IdCardEditor({ initialTemplate }) {
@@ -43,7 +46,7 @@ export default function IdCardEditor({ initialTemplate }) {
   const layerRef = useRef(null);
   const trRef = useRef(null);
   const prevTemplateRef = useRef(template);
-
+  const navigate = useNavigate();
   const [loading, setLoading] = useState({
     saving: false,
     generating: false,
@@ -567,6 +570,12 @@ export default function IdCardEditor({ initialTemplate }) {
               className="border rounded px-2 py-1"
               placeholder="Template Name"
             />
+            <button
+              onClick={() => navigate("/admin-dashboard/student-details")}
+              className="flex items-center gap-3 w-full px-4 py-2 rounded-lg bg-primary text-white hover:bg-gray-100 text-gray-700 font-medium transition"
+            >
+              <FaUsers /> Student Details
+            </button>
           </div>
         </div>
 
