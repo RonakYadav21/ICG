@@ -24,8 +24,8 @@ public class StudentController {
 
     @PostMapping("/studentRegistration")
     public ResponseEntity<Student> registerStudent(@RequestBody Student student) {
-        student.setStatus("Pending");
-        student.setDigitalCardUrl("");
+//        student.setStatus("Pending");
+//        student.setDigitalCardUrl("");
         Student savedStudent = studentRepository.save(student);
         return ResponseEntity.ok(savedStudent);
     }

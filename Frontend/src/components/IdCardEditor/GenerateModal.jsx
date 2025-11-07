@@ -1,139 +1,146 @@
 import React, { useState, useEffect } from "react";
+import { getAllCourses, getStudentsByCourse } from "../../api/templatesApi";
 
 const GenerateModal = ({ isOpen, onClose, onGenerate }) => {
   const [courses, setCourses] = useState([]);
-  const [selectedCourse, setSelectedCourse] = useState("");
   const [students, setStudents] = useState([]);
-  const [loading, setLoading] = useState(false);
+  const [selectedCourse, setSelectedCourse] = useState(null);
   const [selectedStudents, setSelectedStudents] = useState([]);
+  const [selectAll, setSelectAll] = useState(false);
 
-  // Fetch courses when modal opens
   useEffect(() => {
-    const fetchCourses = async () => {
-      try {
-        const response = await fetch("/api/courses");
-        const data = await response.json();
-        setCourses(data);
-      } catch (error) {
-        console.error("Failed to fetch courses:", error);
-      }
-    };
-
     if (isOpen) {
-      fetchCourses();
+      getAllCourses().then(setCourses).catch(console.error);
     }
   }, [isOpen]);
 
-  // Fetch students when course is selected
-  useEffect(() => {
-    const fetchStudents = async () => {
-      if (!selectedCourse) return;
+  const handleCourseChange = async (e) => {
+    const courseId = e.target.value;
+    setSelectedCourse(courseId);
 
-      try {
-        setLoading(true);
-        const response = await fetch(
-          `/api/students/by-course/${selectedCourse}`
-        );
-        const data = await response.json();
-        setStudents(data);
-      } catch (error) {
-        console.error("Failed to fetch students:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
+    if (!courseId) {
+      setStudents([]);
+      setSelectedStudents([]);
+      setSelectAll(false);
+      return;
+    }
 
-    fetchStudents();
-  }, [selectedCourse]);
+    const studentsData = await getStudentsByCourse(courseId);
+    setStudents(studentsData);
+    setSelectedStudents([]);
+    setSelectAll(false);
+  };
+
+  const handleSelectAll = () => {
+    if (!selectAll) {
+      setSelectedStudents(students.map((s) => s.id.toString()));
+    } else {
+      setSelectedStudents([]);
+    }
+    setSelectAll(!selectAll);
+  };
+
+  const handleStudentToggle = (id) => {
+    const strId = id.toString();
+    let newSelection;
+    if (selectedStudents.includes(strId)) {
+      newSelection = selectedStudents.filter((sid) => sid !== strId);
+      setSelectAll(false);
+    } else {
+      newSelection = [...selectedStudents, strId];
+      if (newSelection.length === students.length) setSelectAll(true);
+    }
+    setSelectedStudents(newSelection);
+  };
+
+  const handleSubmit = () => {
+    if (!selectedCourse || selectedStudents.length === 0) {
+      alert("Please select a course and at least one student");
+      return;
+    }
+
+    onGenerate({
+      courseId: Number(selectedCourse),
+      selectedStudentIds: selectedStudents.map((s) => Number(s)),
+    });
+    onClose();
+  };
 
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-      <div className="bg-white p-6 rounded-lg w-[500px] max-h-[80vh] overflow-y-auto">
-        <h2 className="text-xl font-semibold mb-4">Generate ID Cards</h2>
+    <div className="fixed inset-0 z-50 flex items-center justify-center pointer-events-none bg-white/80">
+      {/* Modal */}
+      <div className="relative w-[90vw] max-w-5xl h-[80vh] bg-white rounded-xl shadow-lg p-6 overflow-auto pointer-events-auto">
+        <h2 className="text-2xl font-bold mb-4 text-gray-800">
+          Generate ID Cards
+        </h2>
 
-        {/* Course Selection */}
         <div className="mb-4">
-          <label className="block text-sm font-medium mb-2">
+          <label className="block mb-2 font-medium text-gray-700">
             Select Course
           </label>
           <select
-            value={selectedCourse}
-            onChange={(e) => {
-              setSelectedCourse(e.target.value);
-              setSelectedStudents([]);
-            }}
-            className="w-full p-2 border rounded"
+            value={selectedCourse || ""}
+            onChange={handleCourseChange}
+            className="w-full border rounded-lg p-3 text-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-400"
           >
-            <option value="">Choose a course...</option>
-            {courses.map((course) => (
-              <option key={course._id} value={course._id}>
-                {course.name}
+            <option value="">Select a course</option>
+            {courses.map((c) => (
+              <option key={c.id} value={c.id}>
+                {c.courseName}
               </option>
             ))}
           </select>
         </div>
 
-        {/* Student Selection */}
-        {selectedCourse && (
+        {students.length > 0 && (
           <div className="mb-4">
-            <div className="flex justify-between items-center mb-2">
-              <label className="block text-sm font-medium">
+            <div className="flex items-center justify-between mb-2">
+              <label className="block font-medium text-gray-700">
                 Select Students
               </label>
-              <button
-                onClick={() => setSelectedStudents(students.map((s) => s._id))}
-                className="text-sm text-blue-500 hover:text-blue-600"
-              >
-                Select All
-              </button>
+              <div className="flex items-center gap-2">
+                <input
+                  type="checkbox"
+                  checked={selectAll}
+                  onChange={handleSelectAll}
+                  id="selectAllStudents"
+                />
+                <label htmlFor="selectAllStudents" className="text-gray-700">
+                  Select All
+                </label>
+              </div>
             </div>
-            <div className="max-h-[300px] overflow-y-auto border rounded p-2">
-              {loading ? (
-                <div className="text-center py-4">Loading students...</div>
-              ) : (
-                students.map((student) => (
-                  <label
-                    key={student._id}
-                    className="flex items-center p-2 hover:bg-gray-50"
-                  >
-                    <input
-                      type="checkbox"
-                      checked={selectedStudents.includes(student._id)}
-                      onChange={(e) => {
-                        setSelectedStudents((prev) =>
-                          e.target.checked
-                            ? [...prev, student._id]
-                            : prev.filter((id) => id !== student._id)
-                        );
-                      }}
-                      className="mr-2"
-                    />
-                    <span>{student.name}</span>
-                  </label>
-                ))
-              )}
+            <div className="max-h-[60vh] overflow-auto border rounded-lg p-3">
+              {students.map((s) => (
+                <div key={s.id} className="flex items-center gap-2 mb-1">
+                  <input
+                    type="checkbox"
+                    checked={selectedStudents.includes(s.id.toString())}
+                    onChange={() => handleStudentToggle(s.id)}
+                  />
+                  <span>
+                    {s.firstName} {s.lastName} ({s.enrollmentNo})
+                  </span>
+                </div>
+              ))}
             </div>
           </div>
         )}
 
-        {/* Actions */}
-        <div className="flex justify-end gap-2 mt-4">
+        <div className="flex justify-end gap-4 mt-4">
           <button
             onClick={onClose}
-            className="px-4 py-2 text-gray-600 hover:bg-gray-100 rounded"
+            className="px-4 py-2 border rounded-lg text-gray-700 hover:bg-gray-100 transition"
           >
             Cancel
           </button>
           <button
-            onClick={() =>
-              onGenerate({ courseId: selectedStudents, selectedStudents })
-            }
-            disabled={loading || selectedStudents.length === 0}
-            className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 disabled:opacity-50"
+            onClick={handleSubmit}
+            className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition"
           >
-            Generate Cards
+            Generate
           </button>
         </div>
       </div>

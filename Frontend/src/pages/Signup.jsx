@@ -1,18 +1,21 @@
 import React, { useState } from "react";
-import {useNavigate} from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import toast from "react-hot-toast";
 
 const Signup = () => {
-  const API_URL =
-    import.meta.env.VITE_BACKEND_URL || "http://localhost:5000/api";
+  const API_URL = import.meta.env.VITE_BACKEND_URL || "http://localhost:8080";
+  // const API_URL = "http://localhost:8080";
 
   const [formData, setFormData] = useState({
-    name: "",
+    fullName: "",
     email: "",
+    phoneNumber: "",
     password: "",
   });
+
   const navigate = useNavigate();
+
   const changeHandler = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({
@@ -23,11 +26,11 @@ const Signup = () => {
 
   const submitHandler = async (e) => {
     e.preventDefault();
-
-    console.log({ formData: formData });
     try {
-      await axios.post(`${API_URL}/auth/signup`, formData);
-      toast.success("account created successfully!");
+      const res = await axios.post(`${API_URL}/auth/register`, formData);
+      console.log(res);
+      console.log("signed up!");
+      toast.success("Account created successfully!");
       navigate("/login");
     } catch (err) {
       toast.error(err.response?.data?.message || "Signup failed");
@@ -35,34 +38,58 @@ const Signup = () => {
   };
 
   return (
-    <div>
-      <form onSubmit={submitHandler} action="">
-        <h2 className="">Create your account</h2>
-        <input
-          type="text"
-          name="name"
-          className=""
-          placeholder="enter your name"
-          value={formData.name}
-          onChange={changeHandler}
-        />
-        <input
-          type="text"
-          name="email"
-          className=""
-          placeholder="enter your email"
-          value={formData.email}
-          onChange={changeHandler}
-        />
-        <input
-          type="password"
-          name="password"
-          className=""
-          placeholder="enter your password"
-          value={formData.password}
-          onChange={changeHandler}
-        />
-        <button type="submit">submit</button>
+    <div className="flex justify-center items-center min-h-screen bg-gray-100 px-4">
+      <form
+        onSubmit={submitHandler}
+        className="bg-white shadow-xl rounded-lg p-8 w-full max-w-md space-y-6"
+      >
+        <div>
+          <label>Full Name</label>
+          <input
+            name="fullName"
+            value={formData.fullName}
+            onChange={changeHandler}
+          />
+        </div>
+        <div>
+          <label>Email</label>
+          <input name="email" value={formData.email} onChange={changeHandler} />
+        </div>
+        <div>
+          <label>Phone Number</label>
+          <input
+            name="phoneNumber"
+            value={formData.phoneNumber}
+            onChange={changeHandler}
+          />
+        </div>
+        <div>
+          <label>Password</label>
+          <input
+            type="password"
+            name="password"
+            value={formData.password}
+            onChange={changeHandler}
+          />
+        </div>
+        <button
+          type="submit"
+          className="w-full bg-blue-600 text-white font-medium py-2 rounded hover:bg-blue-700 transition-all cursor-pointer"
+        >
+          {" "}
+          Sign Up{" "}
+        </button>{" "}
+        <p className="text-center text-sm text-gray-600">
+          {" "}
+          Already have an account?{" "}
+          <span
+            className="text-blue-600 cursor-pointer hover:underline"
+            onClick={() => navigate("/login")}
+          >
+            {" "}
+            Login{" "}
+          </span>{" "}
+        </p>
       </form>
     </div>
   );

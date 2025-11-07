@@ -16,8 +16,9 @@ public class StudentService {
     }
 
     public Student registerStudent(Student student) {
-        student.setStatus("Pending");
-        student.setDigitalCardUrl("");
+//        student.setStatus("Pending");		
+//        student.setDigitalCardUrl("");
+    	System.out.println(student);
         return studentRepository.save(student);
     }
 

@@ -1,16 +1,11 @@
 import React from "react";
 import { useState } from "react";
 import IdCardEditor from "../components/IdCardEditor/IdCardEditor";
-import ShowTemplate from "../components/ShowTemplate";
 import TemplateList from "../components/IdCardEditor/TemplateList";
 export default function EditorPage() {
   const [selectedTemplate, setSelectedTemplate] = useState(null);
-
   return (
     <div className="min-h-screen p-6">
-      All Available templates:
-      {/* <ShowTemplate /> */}
-      Playground to create ID card template:
       <div className="flex">
         <TemplateList
           onSelect={(temp) => {
@@ -30,7 +25,6 @@ export default function EditorPage() {
             });
           }}
         />
-
         <IdCardEditor initialTemplate={selectedTemplate} />
       </div>
     </div>

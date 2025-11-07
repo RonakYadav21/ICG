@@ -5,12 +5,11 @@ import toast from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
 
 const Login = () => {
-  const API_URL =
-    import.meta.env.VITE_BACKEND_URL || "http://localhost:8080/api";
+  const API_URL = import.meta.env.VITE_BACKEND_URL || "http://localhost:8080";
+  // const API_URL = "http://localhost:8084"
 
   const { login } = useAuth();
   const navigate = useNavigate();
-  ``;
   const [formData, setFormData] = useState({
     email: "",
     password: "",
@@ -26,11 +25,11 @@ const Login = () => {
   const submitHandler = async (e) => {
     e.preventDefault();
     try {
-      const res = await axios.post(`${API_URL}/api/auth/login`, formData);
+      const res = await axios.post(`${API_URL}/auth/login`, formData);
       const data = await res.data;
       login(data.token);
       toast.success("Login successfully!");
-      navigate("/dashboard");
+      navigate("/student-registration");
     } catch (err) {
       toast.error(err.response?.data?.message || "Login failed");
     }

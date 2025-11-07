@@ -1,59 +1,31 @@
-import { NavLink } from "react-router-dom";
+import React from "react";
+import { FaEdit, FaUsers } from "react-icons/fa";
+import { useNavigate } from "react-router-dom";
 
 const Sidebar = () => {
-  const linkClasses =
-    "block py-2 px-4 rounded hover:bg-blue-100 transition text-gray-700";
-  const activeClasses = "bg-blue-500 text-white font-medium";
-
+  const navigate = useNavigate();
   return (
-    <div className="w-56 min-h-screen bg-gray-50 border-r sticky top-0 p-4">
-      <h2 className="text-lg font-bold mb-4">Dashboard</h2>
-
-      <nav className="flex flex-col gap-2">
-        <NavLink
-          to="/student-registration"
-          className={({ isActive }) =>
-            `${linkClasses} ${isActive ? activeClasses : ""}`
-          }
-        >
-          Student Registration
-        </NavLink>
-
-        {/* <NavLink
-          to="/id-card-status"
-          className={({ isActive }) =>
-            `${linkClasses} ${isActive ? activeClasses : ""}`
-          }
-        >
-          ID Card Status
-        </NavLink> */}
-
-        <NavLink
-          to="/about"
-          className={({ isActive }) =>
-            `${linkClasses} ${isActive ? activeClasses : ""}`
-          }
-        >
-          About
-        </NavLink>
-
-        <NavLink
-          to="/contact"
-          className={({ isActive }) =>
-            `${linkClasses} ${isActive ? activeClasses : ""}`
-          }
-        >
-          Contact Us
-        </NavLink>
-        <NavLink
-          to="/admin-dashboard"
-          className={({ isActive }) =>
-            `${linkClasses} ${isActive ? activeClasses : ""}`
-          }
-        >
-          Admin Dashboard
-        </NavLink>
-      </nav>
+    <div>
+      {" "}
+      <aside className="w-64 bg-white shadow-md h-screen sticky top-0">
+        <div className="p-6">
+          <h1 className="text-2xl font-bold text-gray-800 mb-8">Admin Panel</h1>
+          <nav className="space-y-4">
+            <button
+              onClick={() => navigate("/admin-dashboard")}
+              className="flex items-center gap-3 w-full px-4 py-2 rounded-lg hover:bg-gray-100 text-gray-700 font-medium transition"
+            >
+              <FaEdit /> Dashboard
+            </button>
+            <button
+              onClick={() => navigate("/admin-dashboard/student-details")}
+              className="flex items-center gap-3 w-full px-4 py-2 rounded-lg hover:bg-gray-100 text-gray-700 font-medium transition"
+            >
+              <FaUsers /> Student Details
+            </button>
+          </nav>
+        </div>
+      </aside>
     </div>
   );
 };

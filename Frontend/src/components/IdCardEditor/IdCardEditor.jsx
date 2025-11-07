@@ -1,20 +1,30 @@
-import React, { useRef, useState, useEffect, useCallback } from "react";
+import { useRef, useState, useEffect, useCallback } from "react";
 import { Stage, Layer, Rect, Transformer } from "react-konva";
-import KonvaText from "./KonvaText";
-import KonvaImage from "./KonvaImage";
+import toast from "react-hot-toast";
+import { saveAs } from "file-saver";
+import JSZip from "jszip";
+
+import KonvaText from "../KonvaElements/KonvaText";
+import KonvaImage from "../KonvaElements/KonvaImage";
+import KonvaLine from "../KonvaElements/KonvaLine";
+
 import Sidebar from "./Sidebar";
 import ElementStyleControls from "./ElementStyleControls";
 import { CanvasResizer } from "./CanvasResizer";
 import { CanvasContainer } from "./CanvasContainer";
-import { generateCards, saveTemplate } from "../../api/templatesApi";
 import { mergeTemplateWithData } from "../../utils/Placeholders";
 import { uploadToCloudinary } from "../../utils/Cloudinary";
-import { getStudentsByCourse } from "../../api/templatesApi";
-import { generateIdCardsZip } from "../../utils/exportBatch";
+import {
+  saveTemplate,
+  updateTemplate,
+  deleteTemplate,
+  getStudentsByCourse,
+} from "../../api/templatesApi";
 
 const uid = () => Math.random().toString(36).slice(2, 9);
 
 export default function IdCardEditor({ initialTemplate }) {
+  // Initial Template
   const initial = initialTemplate ?? {
     name: "Untitled",
     width: 800,
@@ -34,12 +44,12 @@ export default function IdCardEditor({ initialTemplate }) {
   const trRef = useRef(null);
   const prevTemplateRef = useRef(template);
 
-  // Add loading state
   const [loading, setLoading] = useState({
     saving: false,
     generating: false,
   });
   const [isGenerating, setIsGenerating] = useState(false);
+
   useEffect(() => {
     if (initialTemplate) {
       setTemplate(initialTemplate);
@@ -49,9 +59,6 @@ export default function IdCardEditor({ initialTemplate }) {
   }, [initialTemplate]);
 
   useEffect(() => {
-    console.log(prevTemplateRef.current);
-    console.log("Template changed:");
-    console.log(template);
     prevTemplateRef.current = template;
   }, [template]);
 
@@ -108,7 +115,7 @@ export default function IdCardEditor({ initialTemplate }) {
     return element;
   };
 
-  const addText = () => {
+  const addText = (placeholderKey = "name") => {
     const el = {
       id: uid(),
       type: "text",
@@ -116,7 +123,7 @@ export default function IdCardEditor({ initialTemplate }) {
       y: 40,
       rotation: 0,
       props: {
-        text: "{{name}}",
+        text: `${placeholderKey}`,
         fontSize: 22,
         fontFamily: "Poppins",
         fill: "#222222",
@@ -148,7 +155,6 @@ export default function IdCardEditor({ initialTemplate }) {
 
   const addImage = async (imageType = "static") => {
     if (imageType === "placeholder") {
-      // Add a placeholder for student photo
       const el = {
         id: uid(),
         type: "image",
@@ -158,11 +164,11 @@ export default function IdCardEditor({ initialTemplate }) {
         height: 120,
         rotation: 0,
         props: {
-          placeholder: "photo", // indicates this is a photo placeholder
-          src: "/placeholder-profile.png", // default placeholder image
+          placeholder: "photo",
           originalWidth: 120,
           originalHeight: 120,
         },
+        src: null,
       };
       setElements((s) => [...s, el]);
       setSelectedId(el.id);
@@ -205,7 +211,7 @@ export default function IdCardEditor({ initialTemplate }) {
         height: initialHeight,
         rotation: 0,
         props: {
-          isStatic: true, // indicates this is a static image
+          isStatic: true,
           src: uploadedURL,
           originalWidth: img.width || initialWidth,
           originalHeight: img.height || initialHeight,
@@ -217,6 +223,24 @@ export default function IdCardEditor({ initialTemplate }) {
     input.click();
   };
 
+  const addLine = () => {
+    const el = {
+      id: uid(),
+      type: "line",
+      x: 150,
+      y: 150,
+      points: [0, 0, 200, 0],
+      rotation: 0,
+      props: {
+        stroke: "#000000",
+        strokeWidth: 2,
+        dash: [],
+      },
+    };
+    setElements((e) => [...e, el]);
+    setSelectedId(el.id);
+  };
+
   const updateElement = (updated) => {
     setElements((prev) =>
       prev.map((e) => (e.id === updated.id ? maintainAspectRatio(updated) : e))
@@ -226,15 +250,6 @@ export default function IdCardEditor({ initialTemplate }) {
   const deleteSelected = () => {
     setElements((prev) => prev.filter((e) => e.id !== selectedId));
     setSelectedId(null);
-  };
-
-  const exportPNG = () => {
-    if (!stageRef.current) return;
-    const uri = stageRef.current.toDataURL({ pixelRatio: 2 });
-    const a = document.createElement("a");
-    a.href = uri;
-    a.download = "idcard-export.png";
-    a.click();
   };
 
   // handle canvas resize: receives canvas pixel sizes (already zoom-applied)
@@ -323,29 +338,6 @@ export default function IdCardEditor({ initialTemplate }) {
     }
   };
 
-  // Export with student data merged (NOT USED CURRENTLY)
-  const exportWithStudentData = async (studentIds) => {
-    if (!template._id) {
-      alert("Please save the template first");
-      return;
-    }
-
-    try {
-      setLoading((prev) => ({ ...prev, generating: true }));
-      const result = await generateCards(template._id, studentIds);
-
-      // Handle job status
-      if (result.jobId) {
-        alert(`Generation started! Job ID: ${result.jobId}`);
-      }
-    } catch (error) {
-      console.error("Generation failed:", error);
-      alert(error.message || "Failed to generate ID cards");
-    } finally {
-      setLoading((prev) => ({ ...prev, generating: false }));
-    }
-  };
-
   //handle template Name
   const handleSave = async () => {
     if (!templateName.trim()) {
@@ -370,9 +362,10 @@ export default function IdCardEditor({ initialTemplate }) {
             el.type === "image"
               ? {
                   ...el.props,
-                  src: el.props.src.startsWith("http")
-                    ? el.props.src
-                    : `${import.meta.env.VITE_BACKEND_URL}${el.props.src}`,
+                  // src: el.props.src.startsWith("http")
+                  //   ? el.props.src
+                  //   : `${import.meta.env.VITE_BACKEND_URL}${el.props.src}`,
+                  src: el.props.src,
                 }
               : el.props,
         })),
@@ -385,95 +378,130 @@ export default function IdCardEditor({ initialTemplate }) {
       setTemplate(saved);
       setTemplateName(saved?.name || templateName);
 
-      alert("Template saved successfully!");
+      toast.success("Template saved successfully!");
       return saved;
     } catch (err) {
       console.error(err);
-      alert(err.message || "Failed to save template");
+      toast.error(err.message || "Failed to save template");
     } finally {
       setLoading((prev) => ({ ...prev, saving: false }));
     }
   };
 
-  const handlePreview = async (studentData) => {
+  //update existing template
+  const handleUpdate = async () => {
+    if (!template.id) return alert("Save before update");
+
     try {
-      // Create preview template with student data
-      const previewTemplate = mergeTemplateWithData(template, studentData);
+      setLoading((p) => ({ ...p, saving: true }));
 
-      // Temporarily update elements with merged data
-      const originalElements = elements;
-      setElements(previewTemplate.elements);
+      const payload = {
+        name: templateName,
+        width: template.width,
+        height: template.height,
+        backgroundColor: template.backgroundColor,
+        borderColor: template.borderColor,
+        borderWidth: template.borderWidth,
+        elementsJson: JSON.stringify(template.elements),
+        meta: JSON.stringify(template.meta),
+      };
 
-      // Wait for stage to update
-      await new Promise((resolve) => setTimeout(resolve, 100));
+      // merge with existing
+      const merged = { ...template, ...payload };
 
-      // Export preview
-      const dataUrl = stageRef.current.toDataURL({ pixelRatio: 2 });
+      const updated = await updateTemplate(template.id, merged);
 
-      // Restore original elements
-      setElements(originalElements);
+      setTemplate(updated);
+      toast.success("Updated successfully!");
+    } catch (err) {
+      console.error(err);
+      toast.error(err.message);
+    } finally {
+      setLoading((p) => ({ ...p, saving: false }));
+    }
+  };
 
-      // Open preview in new tab
-      const win = window.open();
-      win.document.write(`
-        <html>
-          <head>
-            <title>ID Card Preview</title>
-          </head>
-          <body style="display:flex; justify-content:center; align-items:center; min-height:100vh; margin:0; background:#f0f0f0;">
-            <img src="${dataUrl}" style="max-width:100%; box-shadow:0 4px 8px rgba(0,0,0,0.1);" />
-          </body>
-        </html>
-      `);
-    } catch (error) {
-      console.error("Preview failed:", error);
-      alert("Failed to generate preview");
+  //delete a template
+  const handleDelete = async () => {
+    if (!template.id) return alert("Nothing to delete");
+
+    if (!confirm("Delete Template?")) return;
+
+    try {
+      await deleteTemplate(template.id);
+      toast.success("Deleted successfully!");
+
+      setTemplate(initial);
+      setTemplateName("Untitled");
+      setElements([]);
+    } catch (err) {
+      console.error(err);
+      toast.error(err.message);
     }
   };
 
   // called from Sidebar/GenerateModal with array of selected student IDs and the courseId
   const handleGenerateCards = async ({ courseId, selectedStudentIds }) => {
-    if (!template._id) {
+    if (!template.id) {
       alert("Please save template before generating ID cards.");
       return;
     }
+
     try {
       setIsGenerating(true);
 
-      // fetch students for course from backend
+      // fetch students for course
       const studentsForCourse = await getStudentsByCourse(courseId);
-      // filter to selected ones
       const students = studentsForCourse.filter((s) =>
-        selectedStudentIds.includes(s._id)
+        (selectedStudentIds || []).includes(s.id)
       );
 
       if (students.length === 0) {
-        alert("No students selected or found for the course.");
+        toast.error("No students selected or found for the course.");
         return;
       }
 
-      // generate zip using current template and Konva stage
-      const { zipBlob } = await (async () => {
-        const result = await generateIdCardsZip({
-          stageRef,
-          setElements, // NOTE: this will temporarily swap elements to merged ones
-          template,
-          students,
-          options: { pixelRatio: 2 },
-        });
-        return { zipBlob: result.zipBlob };
-      })();
+      const zip = new JSZip();
+      const originalElements = [...elements];
 
-      // download ZIP
-      const fileName = `${(template.name || "idcards").replace(
-        /[^\w\-_. ]+/g,
-        "_"
-      )}_${courseId}.zip`;
-      saveBlob(zipBlob, fileName);
-      alert("ID cards generated and downloaded as ZIP.");
+      for (let i = 0; i < students.length; i++) {
+        const student = students[i];
+
+        // merge template placeholders with student data
+        const merged = mergeTemplateWithData(template, {
+          ...student,
+          photo: student.studentPhoto,
+        });
+        setElements(merged.elements);
+
+        // wait for stage to render
+        await new Promise((res) => setTimeout(res, 100));
+
+        // export PNG
+        const dataUrl = stageRef.current.toDataURL({ pixelRatio: 2 });
+        const blob = await (await fetch(dataUrl)).blob();
+
+        const safeName = `${student.firstName}_${student.lastName}.png`.replace(
+          /[^\w\-_. ]+/g,
+          "_"
+        );
+        zip.file(safeName, blob);
+      }
+
+      // restore original template elements
+      setElements(originalElements);
+
+      // generate ZIP and download
+      const zipBlob = await zip.generateAsync({
+        type: "blob",
+        compression: "DEFLATE",
+      });
+      saveAs(zipBlob, `${template.name || "idcards"}.zip`);
+
+      toast.success("ID cards generated successfully!");
     } catch (err) {
       console.error("Generate failed:", err);
-      alert(err.message || "Failed to generate ID cards");
+      toast.error(err.message || "Failed to generate ID cards");
     } finally {
       setIsGenerating(false);
     }
@@ -483,7 +511,6 @@ export default function IdCardEditor({ initialTemplate }) {
   const saveBlob = (blob, filename) => {
     // dynamic import to keep bundle small if file-saver not installed globally
     // file-saver is required (npm install file-saver)
-    const { saveAs } = require("file-saver");
     saveAs(blob, filename);
   };
 
@@ -495,8 +522,10 @@ export default function IdCardEditor({ initialTemplate }) {
         onAddRect={addRect}
         onDelete={deleteSelected}
         onSave={handleSave}
-        onPreview={handlePreview}
+        onUpdate={handleUpdate}
+        onTemplateDelete={handleDelete}
         onGenerateCards={handleGenerateCards}
+        onAddLine={addLine}
       />
 
       <div className="w-64">
@@ -538,15 +567,6 @@ export default function IdCardEditor({ initialTemplate }) {
               className="border rounded px-2 py-1"
               placeholder="Template Name"
             />
-            <button
-              onClick={handleSave}
-              className="p-2 border rounded bg-blue-500 text-white"
-            >
-              Save Template
-            </button>
-            <button onClick={exportPNG} className="p-2 border rounded">
-              Export PNG
-            </button>
           </div>
         </div>
 
@@ -587,6 +607,17 @@ export default function IdCardEditor({ initialTemplate }) {
                   />
 
                   {elements.map((el) => {
+                    if (el.type === "line") {
+                      return (
+                        <KonvaLine
+                          key={el.id}
+                          shape={el}
+                          isSelected={el.id === selectedId}
+                          onSelect={(id) => setSelectedId(id)}
+                          onChange={updateElement}
+                        />
+                      );
+                    }
                     if (el.type === "text") {
                       return (
                         <KonvaText

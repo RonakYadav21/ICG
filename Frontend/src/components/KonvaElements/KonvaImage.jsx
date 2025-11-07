@@ -5,7 +5,7 @@ import Konva from "konva";
 
 const KonvaImage = forwardRef(
   ({ shape, isSelected, onSelect, onChange }, ref) => {
-    const [img] = useImage(shape.props?.src || "", "anonymous");
+    const [img] = useImage(shape.props?.src || null, "anonymous");
     const localGroupRef = ref || useRef();
     const imageRef = useRef();
     const [loaded, setLoaded] = useState(false);
@@ -17,7 +17,7 @@ const KonvaImage = forwardRef(
       stroke: shape.props?.borderColor || "#999999",
       strokeWidth: shape.props?.borderWidth ?? 2,
       cornerRadius: shape.props?.borderRadius ?? 8,
-      label: shape.props?.label || "Photo",
+      label: shape.props?.label || "",
       labelColor: shape.props?.labelColor || "#666666",
       labelFontSize: shape.props?.fontSize || 14,
       labelFontStyle: shape.props?.fontStyle || "italic",
@@ -102,6 +102,7 @@ const KonvaImage = forwardRef(
         )}
 
         {/* actual image (or placeholder src) */}
+
         <Image
           id={shape.id}
           ref={imageRef}
@@ -133,7 +134,6 @@ const KonvaImage = forwardRef(
         {/* placeholder label centered */}
         {isPlaceholder && (
           <>
-            
             <Text
               text={placeholderStyles.label}
               fill={placeholderStyles.labelColor}

@@ -23,7 +23,6 @@ const expandHex = (hex) => {
   }
   return "#000000";
 };
-
 const ElementStyleControls = ({
   selectedElement,
   onChange,
@@ -96,7 +95,6 @@ const ElementStyleControls = ({
       ...updates, // width/height at element root for non-text shapes
     });
   };
-
   if (selectedElement.type === "text") {
     const currentColor = expandHex(selectedElement.props.fill || "#000000");
     return (
@@ -265,6 +263,68 @@ const ElementStyleControls = ({
           />
         </div>
       </div>
+    );
+  }
+  if (selectedElement.type === "line") {
+    return (
+      <>
+        <label>Stroke color</label>
+        <input
+          type="color"
+          value={selectedElement.props.stroke}
+          onChange={(e) =>
+            onChange({
+              ...selectedElement,
+              props: { ...selectedElement.props, stroke: e.target.value },
+            })
+          }
+        />
+
+        <label>Stroke width</label>
+        <input
+          type="number"
+          min={1}
+          value={selectedElement.props.strokeWidth}
+          onChange={(e) =>
+            onChange({
+              ...selectedElement,
+              props: {
+                ...selectedElement.props,
+                strokeWidth: +e.target.value,
+              },
+            })
+          }
+        />
+
+        <label>Line style</label>
+        <select
+          value={
+            selectedElement.props.dash?.length === 0
+              ? "solid"
+              : selectedElement.props.dash?.join(",") === "6,4"
+              ? "dash"
+              : "dot"
+          }
+          onChange={(e) => {
+            let dash = [];
+
+            if (e.target.value === "dash") dash = [6, 4];
+            if (e.target.value === "dot") dash = [2, 2];
+
+            onChange({
+              ...selectedElement,
+              props: {
+                ...selectedElement.props,
+                dash,
+              },
+            });
+          }}
+        >
+          <option value="solid">Solid</option>
+          <option value="dash">Dashed</option>
+          <option value="dot">Dotted</option>
+        </select>
+      </>
     );
   }
 

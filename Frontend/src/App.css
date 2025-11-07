@@ -2,7 +2,7 @@
 
 @theme {
   /* Brand Colors */
-  --color-primary: #dd6031;
+  --color-primary: #dd6031; /* orange */
   --color-secondary: #eabe7c;
 
   /* Headings */
@@ -24,4 +24,8 @@
 
   /* Gradient */
   --bg-gradient: linear-gradient(180deg, #ffeacc 60%, #ffffff 100%);
+}
+
+body {
+  font-family: "Open sans", sans-serif;
 }

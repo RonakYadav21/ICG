@@ -1,5 +1,6 @@
 import api from "../utils/axios";
 
+// TEMPLATE APIS
 export const saveTemplate = async (template) => {
   console.log("saving template....");
   console.log(template);
@@ -15,6 +16,7 @@ export const saveTemplate = async (template) => {
   };
 
   const res = await api.post(`/templates/save`, payload);
+  console.log(res.data);
   return res.data;
 };
 
@@ -42,26 +44,56 @@ export const getTemplateById = async (id) => {
   }
 };
 
-export const getStudentsByCourse = async (courseId) => {
+export const updateTemplate = async (id, data) => {
   try {
-    const res = await api.get(`/students/by-course/${courseId}`);
-    return res.data || [];
+    const res = await api.put(`/templates/${id}`, data);
+    return res.data;
   } catch (err) {
     const msg =
-      err.response?.data?.message || err.message || "Failed to fetch students";
+      err.response?.data?.message || err.message || "Failed to fetch template";
     throw new Error(msg);
   }
 };
 
-export const generateCards = async (templateId, studentIds) => {
+export const deleteTemplate = async (id) => {
   try {
-    const res = await api.post(`/templates/${templateId}/generate`, {
-      studentIds,
-    });
+    const res = await api.delete(`/templates/${id}`);
     return res.data;
   } catch (err) {
     const msg =
-      err.response?.data?.message || err.message || "Failed to generate cards";
+      err.response?.data?.message || err.message || "Failed to fetch template";
+    throw new Error(msg);
+  }
+};
+
+// COURSE APIS
+
+export const getAllCourses = async () => {
+  try {
+    const res = await api.get("/templates/all");
+    return res.data || [];
+  } catch (err) {
+    throw new Error(err.response?.data?.message || err.message);
+  }
+};
+
+//STUDENT APIS
+export const studentRegistration = async (submissionData) => {
+  try {
+    const res = await api.post(`/student/studentRegistration`, submissionData);
+    return res || [];
+  } catch (error) {
+    throw new Error(err.response?.data?.message || err.message);
+  }
+};
+
+export const getStudentsByCourse = async (courseId) => {
+  try {
+    const res = await api.get(`/student/by-course/${courseId}`);
+    return res.data || [];
+  } catch (err) {
+    const msg =
+      err.response?.data?.message || err.message || "Failed to fetch students";
     throw new Error(msg);
   }
 };
