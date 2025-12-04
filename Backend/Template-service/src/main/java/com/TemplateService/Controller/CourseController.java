@@ -34,4 +34,5 @@ public class CourseController {
 	        Course savedCourse = courseService.addCourse(course);
 	        return ResponseEntity.ok(savedCourse);
 	    }
+	    
 }

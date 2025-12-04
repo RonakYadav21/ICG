@@ -17,6 +17,7 @@ public class AdminService {
 	 private AuthClient authServiceClient;
 
 	public Admin Register(Admin admin) {
+		System.out.println(admin);
 		 Admin savedadmin=	adminrepo.save(admin);
 		  RegisterAuthUserRequest authUser = new RegisterAuthUserRequest();
 		    authUser.setUsername(admin.getEmail());

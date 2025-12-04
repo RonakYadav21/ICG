@@ -52,12 +52,7 @@ public class IDCardTemplateService {
     }
     public IDCardTemplate saveTemplate(TemplateRequestDTO dto) {
         try {
-//            // Convert JSON string to Map
-//            Map<String, Object> elementsMap = objectMapper.readValue(
-//                    dto.getElementsJson(), Map.class);
-//
-//            Map<String, Object> metaMap = objectMapper.readValue(
-//                    dto.getMeta(), Map.class);
+//            
 
             IDCardTemplate template = IDCardTemplate.builder()
                     .name(dto.getName())

@@ -41,7 +41,7 @@ public class JwtAuthFilter implements GatewayFilter {
         String role = claims.get("role", String.class);
         
         // ✅ Role-based route access
-        if ((path.startsWith("/student/") && !role.equals("ROLE_STUDENT")) ||
+        if (
             (path.startsWith("/Admin/") && !role.equals("ROLE_ADMIN"))) {
             exchange.getResponse().setStatusCode(HttpStatus.FORBIDDEN);
             return exchange.getResponse().setComplete();

@@ -27,7 +27,6 @@ public class adminController {
 	@PostMapping("/signup")
 	public ResponseEntity<?> adminsignup (@RequestBody Admin admin){
 		admin.setPassword(passwordEncoder.encode(admin.getPassword()));
-
 		Admin response= adminservice.Register(admin);
 		return ResponseEntity.status(HttpStatus.CREATED).body(response);
 	}
