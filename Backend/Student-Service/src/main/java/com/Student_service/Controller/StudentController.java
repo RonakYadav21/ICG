@@ -30,13 +30,13 @@ public class StudentController {
         return ResponseEntity.ok(savedStudent);
     }
 
-    @GetMapping("/checkStudent/{email}")
-    public ResponseEntity<Map<String, Boolean>> checkStudent(@PathVariable String email) {
-        boolean registered = studentService.isStudentRegistered(email);
-        return ResponseEntity.ok(Map.of("registered", registered));
-    }
+//    @GetMapping("/checkStudent/{email}")
+//    public ResponseEntity<Map<String, Boolean>> checkStudent(@PathVariable String email) {
+//        boolean registered = studentService.isStudentRegistered(email);
+//        return ResponseEntity.ok(Map.of("registered", registered));
+//    }
 
-    // ✅ New endpoint
+    //  New endpoint
     @GetMapping("/by-course/{courseId}")
     public ResponseEntity<List<Student>> getStudentsByCourse(@PathVariable Long courseId) {
         List<Student> students = studentService.getStudentsByCourseId(courseId);
