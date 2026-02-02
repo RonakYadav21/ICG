@@ -17,12 +17,12 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class CourseController {
 	  private final CourseService courseService;
-	    // ✅ Get all courses
+	    //  Get all courses
 	    @GetMapping("/all")
 	    public ResponseEntity<List<Course>> getAllCourses() {
 	        return ResponseEntity.ok(courseService.getAllCourses());
 	    }
-	    // ✅ Get course by course_id
+//	     Get course by course_id
 	    @GetMapping("/{course_id}")
 	    public ResponseEntity<?> getCourseByCourseId(@PathVariable String course_id) {
 	        return courseService.getCourseByCourseId(course_id)

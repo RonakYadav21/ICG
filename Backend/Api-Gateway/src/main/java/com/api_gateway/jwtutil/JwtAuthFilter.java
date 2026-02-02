@@ -20,7 +20,7 @@ public class JwtAuthFilter implements GatewayFilter {
     public Mono<Void> filter(ServerWebExchange exchange, GatewayFilterChain chain) {
         String path = exchange.getRequest().getURI().getPath();
 
-        // ✅ Allow public URLs without token
+        //  Allow public URLs without token
         if (path.contains("/signup") || path.contains("/login") || path.startsWith("/auth/")) {
             return chain.filter(exchange);
         }
@@ -40,13 +40,13 @@ public class JwtAuthFilter implements GatewayFilter {
         Claims claims = jwtUtil.extractAllClaims(token);
         String role = claims.get("role", String.class);
         
-        // ✅ Role-based route access
+        //  Role-based route access
         if (
             (path.startsWith("/Admin/") && !role.equals("ROLE_ADMIN"))) {
             exchange.getResponse().setStatusCode(HttpStatus.FORBIDDEN);
             return exchange.getResponse().setComplete();
         }
-        // ✅ Forwarding headers
+        //  Forwarding headers
         ServerHttpRequest modifiedRequest = exchange.getRequest().mutate()
             .header("X-User-Email", claims.getSubject())
             .header("X-User-Role", role)

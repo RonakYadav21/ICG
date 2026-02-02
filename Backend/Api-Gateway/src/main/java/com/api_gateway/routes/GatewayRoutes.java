@@ -20,6 +20,7 @@ public class GatewayRoutes {
 		return builder.routes()
 				//public routing
    .route("Auth-Service",r->r.path("/auth/**").uri("lb://AUTH-SERVICE"))
+   .route("Template-Service", r -> r.path("/templates/**").uri("lb://TEMPLATE-SERVICE"))
    .route("Student",r->r.path("/student/**").uri("lb://STUDENT-SERVICE"))
    .route("Admin-Signup", r -> r.path("/Admin/signup")
 		   .uri("lb://ADMIN-SERVICE"))
