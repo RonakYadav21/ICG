@@ -39,8 +39,10 @@ const PlaceholderSelector = ({ addImage, addText }) => {
   };
 
   return (
-    <div className="flex flex-col gap-2 p-2 bg-white rounded shadow">
-      <label className="font-semibold">Add Placeholder</label>
+    <div className="flex flex-col gap-2 rounded-2xl border border-slate-200 bg-white/90 p-3 shadow-sm">
+      <label className="text-sm font-semibold text-slate-700">
+        Add Placeholder
+      </label>
       <select
         onChange={(e) => {
           const selectedKey = e.target.value;
@@ -49,7 +51,7 @@ const PlaceholderSelector = ({ addImage, addText }) => {
           handleAddPlaceholder(placeholder.key, placeholder.type);
           e.target.value = "";
         }}
-        className="border rounded p-1"
+        className="rounded-xl border border-slate-200 bg-white/90 p-2 text-sm text-slate-700 shadow-sm focus:border-slate-400 focus:outline-none"
         defaultValue=""
       >
         <option value="">Select Placeholder...</option>

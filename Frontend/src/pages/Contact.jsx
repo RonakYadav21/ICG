@@ -1,7 +1,8 @@
 import React from "react";
 import Navbar from "../components/UI/Navbar";
 import Footer from "../components/UI/Footer";
-
+import saara_img from "../assets/saara_2.jpeg";
+import ronak_img from "../assets/ronak.jpeg";
 const Contact = () => {
   return (
     <div>
@@ -128,7 +129,7 @@ const Contact = () => {
           {/* CARD 1 */}
           <div className="rounded-2xl border border-primary/40 bg-white p-10 shadow-lg text-center hover:-translate-y-2 transition-all">
             <img
-              src="/saara.jpeg"
+              src={saara_img}
               alt="Sara"
               className="w-36 h-36 rounded-full object-cover mx-auto border-4 border-primary"
             />
@@ -162,7 +163,7 @@ const Contact = () => {
           {/* CARD 2 */}
           <div className="rounded-2xl border border-primary/40 bg-white p-10 shadow-lg text-center hover:-translate-y-2 transition-all">
             <img
-              src="/ronak.jpeg"
+              src={ronak_img}
               alt="Ronak"
               className="w-36 h-36 rounded-full object-cover mx-auto border-4 border-primary"
             />
@@ -178,14 +179,14 @@ const Contact = () => {
             <div className="flex gap-6 justify-center mt-6">
               <a
                 className="text-primary font-semibold hover:underline"
-                href="https://github.com/"
+                href="https://github.com/RonakYadav21"
                 target="_blank"
               >
                 GitHub
               </a>
               <a
                 className="text-primary font-semibold hover:underline"
-                href="https://linkedin.com/"
+                href="https://www.linkedin.com/in/ronak-yadav-63859b292/"
                 target="_blank"
               >
                 LinkedIn

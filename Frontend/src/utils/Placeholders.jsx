@@ -102,7 +102,7 @@ export const mergeTemplateWithData = (template, studentData = {}) => {
     if (e.type === "text" && e.props?.text) {
       // replace {{key}} occurrences, supports nested keys
       e.props.text = e.props.text.replace(
-        /\{\{\s*([a-zA-Z0-9_.]+)\s*\}\}/g,
+        /\{\{\s*([a-zA-Z0-9_.]+)\s*\}\}/g, // {{text}}
         (_, key) => {
           const val = key
             .split(".")

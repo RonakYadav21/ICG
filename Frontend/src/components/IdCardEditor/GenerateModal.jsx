@@ -87,7 +87,7 @@ const GenerateModal = ({ isOpen, onClose, onGenerate }) => {
           >
             <option value="">Select a course</option>
             {courses.map((c) => (
-              <option key={c.id} value={c.id}>
+              <option key={c.id} value={c.courseId}>
                 {c.courseName}
               </option>
             ))}

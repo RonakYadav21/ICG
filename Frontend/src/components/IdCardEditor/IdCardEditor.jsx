@@ -21,9 +21,10 @@ import {
   getStudentsByCourse,
 } from "../../api/templatesApi";
 
-import { FaEdit, FaUsers } from "react-icons/fa";
+import { FaUsers } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
-
+import { FiTrash2, FiSave, FiDownload, FiEdit } from "react-icons/fi";
+import GenerateModal from "./GenerateModal";
 const uid = () => Math.random().toString(36).slice(2, 9);
 
 export default function IdCardEditor({ initialTemplate }) {
@@ -246,7 +247,7 @@ export default function IdCardEditor({ initialTemplate }) {
 
   const updateElement = (updated) => {
     setElements((prev) =>
-      prev.map((e) => (e.id === updated.id ? maintainAspectRatio(updated) : e))
+      prev.map((e) => (e.id === updated.id ? maintainAspectRatio(updated) : e)),
     );
   };
 
@@ -293,7 +294,7 @@ export default function IdCardEditor({ initialTemplate }) {
           }
 
           return scaled;
-        })
+        }),
       );
 
       // update template logically (will cause Stage to rerender at new size)
@@ -303,7 +304,7 @@ export default function IdCardEditor({ initialTemplate }) {
         return updated;
       });
     },
-    [zoom, template]
+    [zoom, template],
   );
 
   // Canvas change via inspector inputs (logical units)
@@ -324,19 +325,19 @@ export default function IdCardEditor({ initialTemplate }) {
               0,
               Math.min(
                 (updates.width || template.width) - (el.width || 0),
-                el.x || 0
-              )
+                el.x || 0,
+              ),
             );
           if (updates.height)
             scaled.y = Math.max(
               0,
               Math.min(
                 (updates.height || template.height) - (el.height || 0),
-                el.y || 0
-              )
+                el.y || 0,
+              ),
             );
           return scaled;
-        })
+        }),
       );
     }
   };
@@ -365,9 +366,6 @@ export default function IdCardEditor({ initialTemplate }) {
             el.type === "image"
               ? {
                   ...el.props,
-                  // src: el.props.src.startsWith("http")
-                  //   ? el.props.src
-                  //   : `${import.meta.env.VITE_BACKEND_URL}${el.props.src}`,
                   src: el.props.src,
                 }
               : el.props,
@@ -416,6 +414,9 @@ export default function IdCardEditor({ initialTemplate }) {
 
       setTemplate(updated);
       toast.success("Updated successfully!");
+      setTimeout(() => {
+        window.location.reload();
+      }, 1500);
     } catch (err) {
       console.error(err);
       toast.error(err.message);
@@ -456,7 +457,7 @@ export default function IdCardEditor({ initialTemplate }) {
       // fetch students for course
       const studentsForCourse = await getStudentsByCourse(courseId);
       const students = studentsForCourse.filter((s) =>
-        (selectedStudentIds || []).includes(s.id)
+        (selectedStudentIds || []).includes(s.id),
       );
 
       if (students.length === 0) {
@@ -486,7 +487,7 @@ export default function IdCardEditor({ initialTemplate }) {
 
         const safeName = `${student.firstName}_${student.lastName}.png`.replace(
           /[^\w\-_. ]+/g,
-          "_"
+          "_",
         );
         zip.file(safeName, blob);
       }
@@ -516,226 +517,313 @@ export default function IdCardEditor({ initialTemplate }) {
     // file-saver is required (npm install file-saver)
     saveAs(blob, filename);
   };
+  const [showGenerateModal, setShowGenerateModal] = useState(false);
+
+  const handleGenerate = (selectedStudents) => {
+    handleGenerateCards(selectedStudents);
+    setShowGenerateModal(false);
+  };
 
   return (
-    <div className="flex gap-6 p-6">
-      <Sidebar
-        onAddText={addText}
-        onAddImage={addImage}
-        onAddRect={addRect}
-        onDelete={deleteSelected}
-        onSave={handleSave}
-        onUpdate={handleUpdate}
-        onTemplateDelete={handleDelete}
-        onGenerateCards={handleGenerateCards}
-        onAddLine={addLine}
-      />
+    <div className="">
+      <div className="rounded-3xl border border-white/70 bg-white/85 p-5 shadow-[0_20px_50px_-30px_rgba(15,23,42,0.45)] backdrop-blur mb-10">
+        <div className="flex items-center justify-between">
+          <p className="text-sm font-semibold text-slate-700">Zoom</p>
+          <span className="text-sm text-slate-500">
+            {(zoom * 100).toFixed(0)}%
+          </span>
+        </div>
+        <div className="mt-3 flex items-center gap-2">
+          <button
+            onClick={() => setZoom((z) => Math.max(0.2, +(z - 0.1).toFixed(2)))}
+            className="flex-1 rounded-2xl border border-slate-200 bg-white/90 px-3 py-2 text-sm font-semibold text-slate-700 transition hover:-translate-y-0.5 hover:border-slate-300 hover:bg-white"
+          >
+            Zoom -
+          </button>
+          <button
+            onClick={() => setZoom((z) => Math.min(3, +(z + 0.1).toFixed(2)))}
+            className="flex-1 rounded-2xl border border-slate-200 bg-white/90 px-3 py-2 text-sm font-semibold text-slate-700 transition hover:-translate-y-0.5 hover:border-slate-300 hover:bg-white"
+          >
+            Zoom +
+          </button>
+        </div>
+      </div>
 
-      <div className="w-64">
-        <ElementStyleControls
-          selectedElement={elements.find((el) => el.id === selectedId)}
-          onChange={updateElement}
-          onCanvasChange={onCanvasChange}
-          template={template}
-        />
-        <div className="mt-3 bg-white rounded shadow p-3">
-          <div className="flex items-center gap-2">
-            <button
-              onClick={() => setZoom((z) => Math.min(3, +(z + 0.1).toFixed(2)))}
-              className="p-2 border rounded"
-            >
-              Zoom +
-            </button>
-            <button
-              onClick={() =>
-                setZoom((z) => Math.max(0.2, +(z - 0.1).toFixed(2)))
-              }
-              className="p-2 border rounded"
-            >
-              Zoom -
-            </button>
-            <div className="ml-auto">Zoom: {(zoom * 100).toFixed(0)}%</div>
+      <div className="grid w-full min-w-0 gap-6 grid-cols-1 xl:grid-cols-[240px_1fr]">
+        <div className="space-y-6">
+          <ElementStyleControls
+            selectedElement={elements.find((el) => el.id === selectedId)}
+            onChange={updateElement}
+            onCanvasChange={onCanvasChange}
+            template={template}
+          />
+          <Sidebar
+            onAddText={addText}
+            onAddImage={addImage}
+            onAddRect={addRect}
+            onDelete={deleteSelected}
+            onSave={handleSave}
+            onUpdate={handleUpdate}
+            onTemplateDelete={handleDelete}
+            onGenerateCards={handleGenerateCards}
+            onAddLine={addLine}
+          />
+        </div>
+
+        <div className="min-w-0 space-y-5">
+          <div className="rounded-3xl border border-white/70 bg-white/85 p-5 shadow-[0_20px_50px_-30px_rgba(15,23,42,0.45)] backdrop-blur">
+            <div className="flex flex-wrap items-center justify-between gap-4">
+              <div>
+                <p className="text-xs font-semibold uppercase tracking-[0.2em] text-slate-500">
+                  Template
+                </p>
+                <h3 className="text-2xl font-semibold text-slate-900">
+                  ID Card Template Editor
+                </h3>
+              </div>
+              <button
+                onClick={() => navigate("/admin-dashboard/student-details")}
+                className="inline-flex items-center gap-2 rounded-full border border-slate-900/10 bg-white/80 px-4 py-2 text-sm font-semibold text-slate-700 transition hover:-translate-y-0.5 hover:border-slate-900/30 hover:text-slate-900"
+              >
+                <FaUsers /> Student Details
+              </button>
+            </div>
+            <div className="mt-4 flex flex-wrap items-center gap-3">
+              <label className="text-sm font-medium text-slate-600">
+                Template Name
+              </label>
+              <input
+                type="text"
+                value={templateName}
+                onChange={(e) => setTemplateName(e.target.value)}
+                className="w-full min-w-[220px] flex-1 rounded-full border border-slate-200 bg-white/90 px-4 py-2 text-sm text-slate-700 shadow-sm focus:border-slate-400 focus:outline-none"
+                placeholder="Template Name"
+              />
+            </div>
+          </div>
+
+          <div className="rounded-3xl border border-white/70 bg-white/85 p-6 shadow-[0_20px_50px_-30px_rgba(15,23,42,0.45)] backdrop-blur">
+            <div className="mb-4 flex items-center justify-between">
+              <div>
+                <p className="text-xs font-semibold uppercase tracking-[0.2em] text-slate-500">
+                  Canvas
+                </p>
+                <h4 className="text-lg font-semibold text-slate-900">
+                  Live Preview
+                </h4>
+              </div>
+              <div className="text-sm text-slate-500">
+                {template.width} x {template.height}px
+              </div>
+            </div>
+            <div className="flex justify-center">
+              <div className="w-full overflow-x-auto pb-4">
+                <div
+                  className="mx-auto w-fit"
+                  style={{
+                    position: "relative",
+                    width: template.width * zoom,
+                    height: template.height * zoom,
+                  }}
+                >
+                  <CanvasContainer
+                    width={template.width * zoom}
+                    height={template.height * zoom}
+                  >
+                    <Stage
+                      width={template.width * zoom}
+                      height={template.height * zoom}
+                      scaleX={zoom}
+                      scaleY={zoom}
+                      ref={stageRef}
+                      style={{ position: "absolute", left: 0, top: 0 }}
+                    >
+                      <Layer ref={layerRef}>
+                        <Rect
+                          id="background"
+                          x={0}
+                          y={0}
+                          width={template.width}
+                          height={template.height}
+                          fill={template.backgroundColor}
+                          cornerRadius={12}
+                          shadowBlur={8}
+                          stroke={
+                            template.borderWidth
+                              ? template.borderColor
+                              : undefined
+                          }
+                          strokeWidth={template.borderWidth || 0}
+                        />
+
+                        {elements.map((el) => {
+                          if (el.type === "line") {
+                            return (
+                              <KonvaLine
+                                key={el.id}
+                                shape={el}
+                                isSelected={el.id === selectedId}
+                                onSelect={(id) => setSelectedId(id)}
+                                onChange={updateElement}
+                              />
+                            );
+                          }
+                          if (el.type === "text") {
+                            return (
+                              <KonvaText
+                                key={el.id}
+                                ref={null}
+                                shape={el}
+                                isSelected={el.id === selectedId}
+                                onSelect={(id) => setSelectedId(id)}
+                                onChange={updateElement}
+                              />
+                            );
+                          }
+                          if (el.type === "image") {
+                            return (
+                              <KonvaImage
+                                key={el.id}
+                                ref={null}
+                                shape={el}
+                                isSelected={el.id === selectedId}
+                                onSelect={(id) => setSelectedId(id)}
+                                onChange={updateElement}
+                              />
+                            );
+                          }
+                          if (el.type === "rect") {
+                            const props = el.props || {};
+                            return (
+                              <Rect
+                                key={el.id}
+                                id={el.id}
+                                x={el.x || 0}
+                                y={el.y || 0}
+                                width={el.width || 100}
+                                height={el.height || 50}
+                                fill={props.fill || "#fff"}
+                                stroke={props.stroke}
+                                strokeWidth={props.strokeWidth || 0}
+                                cornerRadius={props.cornerRadius || 0}
+                                rotation={el.rotation || 0}
+                                draggable
+                                onClick={(e) => {
+                                  e.cancelBubble = true;
+                                  setSelectedId(el.id);
+                                }}
+                                onTap={(e) => {
+                                  e.cancelBubble = true;
+                                  setSelectedId(el.id);
+                                }}
+                                onDragEnd={(e) =>
+                                  updateElement({
+                                    ...el,
+                                    x: e.target.x(),
+                                    y: e.target.y(),
+                                  })
+                                }
+                                onTransformEnd={(e) => {
+                                  const node = e.target;
+                                  const scaleX = node.scaleX();
+                                  const scaleY = node.scaleY();
+                                  node.scaleX(1);
+                                  node.scaleY(1);
+                                  updateElement({
+                                    ...el,
+                                    x: node.x(),
+                                    y: node.y(),
+                                    rotation: node.rotation(),
+                                    width: Math.max(
+                                      1,
+                                      Math.round(node.width() * scaleX),
+                                    ),
+                                    height: Math.max(
+                                      1,
+                                      Math.round(node.height() * scaleY),
+                                    ),
+                                  });
+                                }}
+                              />
+                            );
+                          }
+                          return null;
+                        })}
+
+                        <Transformer
+                          ref={trRef}
+                          rotateEnabled={true}
+                          anchorSize={8}
+                        />
+                      </Layer>
+                    </Stage>
+                  </CanvasContainer>
+
+                  <div
+                    style={{
+                      position: "absolute",
+                      left: 0,
+                      top: 0,
+                      width: template.width * zoom,
+                      height: template.height * zoom,
+                      pointerEvents: "none",
+                    }}
+                  >
+                    <CanvasResizer
+                      width={template.width * zoom}
+                      height={template.height * zoom}
+                      onResize={handleCanvasResize}
+                    />
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </div>
 
-      <div className="bg-white rounded shadow p-4 flex-1">
-        <div className="flex justify-between mb-3 items-center">
-          <h3 className="text-xl font-semibold">ID Card Template Editor</h3>
-          <div className="flex gap-2 items-center">
-            <input
-              type="text"
-              value={templateName}
-              onChange={(e) => setTemplateName(e.target.value)}
-              className="border rounded px-2 py-1"
-              placeholder="Template Name"
-            />
+      <div className="space-y-6 mt-10 ">
+        <div className="rounded-3xl border border-white/70 bg-white/85 p-5 shadow-[0_20px_50px_-30px_rgba(15,23,42,0.45)] backdrop-blur">
+          <h4 className="text-sm font-semibold uppercase tracking-[0.2em] text-slate-500">
+            Template Actions
+          </h4>
+          <div className="mt-4 flex flex-col gap-3">
             <button
-              onClick={() => navigate("/admin-dashboard/student-details")}
-              className="flex items-center gap-3 w-full px-4 py-2 rounded-lg bg-primary text-white hover:bg-gray-100 text-gray-700 font-medium transition"
+              onClick={handleSave}
+              className="flex items-center justify-center gap-2 rounded-2xl bg-slate-900 px-4 py-3 text-sm font-semibold text-white shadow-lg shadow-slate-900/20 transition hover:bg-slate-800"
             >
-              <FaUsers /> Student Details
+              <FiSave /> Save Template
+            </button>
+
+            <button
+              onClick={() => setShowGenerateModal(true)}
+              className="flex items-center justify-center gap-2 rounded-2xl bg-emerald-500 px-4 py-3 text-sm font-semibold text-white shadow-lg shadow-emerald-500/20 transition hover:bg-emerald-600"
+            >
+              <FiDownload /> Generate ID Cards
+            </button>
+
+            {handleUpdate && (
+              <button
+                onClick={handleUpdate}
+                className="flex items-center justify-center gap-2 rounded-2xl bg-amber-400 px-4 py-3 text-sm font-semibold text-slate-900 shadow-lg shadow-amber-400/20 transition hover:bg-amber-500"
+              >
+                <FiEdit /> Update Template
+              </button>
+            )}
+
+            <button
+              onClick={handleDelete}
+              className="flex items-center justify-center gap-2 rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-sm font-semibold text-red-600 transition hover:bg-red-100"
+            >
+              <FiTrash2 /> Delete Template
             </button>
           </div>
         </div>
-
-        <div className="flex justify-center">
-          <div
-            style={{
-              position: "relative",
-              width: template.width * zoom,
-              height: template.height * zoom,
-            }}
-          >
-            <CanvasContainer
-              width={template.width * zoom}
-              height={template.height * zoom}
-            >
-              <Stage
-                width={template.width * zoom}
-                height={template.height * zoom}
-                scaleX={zoom}
-                scaleY={zoom}
-                ref={stageRef}
-                style={{ position: "absolute", left: 0, top: 0 }}
-              >
-                <Layer ref={layerRef}>
-                  <Rect
-                    id="background"
-                    x={0}
-                    y={0}
-                    width={template.width}
-                    height={template.height}
-                    fill={template.backgroundColor}
-                    cornerRadius={12}
-                    shadowBlur={8}
-                    stroke={
-                      template.borderWidth ? template.borderColor : undefined
-                    }
-                    strokeWidth={template.borderWidth || 0}
-                  />
-
-                  {elements.map((el) => {
-                    if (el.type === "line") {
-                      return (
-                        <KonvaLine
-                          key={el.id}
-                          shape={el}
-                          isSelected={el.id === selectedId}
-                          onSelect={(id) => setSelectedId(id)}
-                          onChange={updateElement}
-                        />
-                      );
-                    }
-                    if (el.type === "text") {
-                      return (
-                        <KonvaText
-                          key={el.id}
-                          ref={null}
-                          shape={el}
-                          isSelected={el.id === selectedId}
-                          onSelect={(id) => setSelectedId(id)}
-                          onChange={updateElement}
-                        />
-                      );
-                    }
-                    if (el.type === "image") {
-                      return (
-                        <KonvaImage
-                          key={el.id}
-                          ref={null}
-                          shape={el}
-                          isSelected={el.id === selectedId}
-                          onSelect={(id) => setSelectedId(id)}
-                          onChange={updateElement}
-                        />
-                      );
-                    }
-                    if (el.type === "rect") {
-                      const props = el.props || {};
-                      return (
-                        <Rect
-                          key={el.id}
-                          id={el.id}
-                          x={el.x || 0}
-                          y={el.y || 0}
-                          width={el.width || 100}
-                          height={el.height || 50}
-                          fill={props.fill || "#fff"}
-                          stroke={props.stroke}
-                          strokeWidth={props.strokeWidth || 0}
-                          cornerRadius={props.cornerRadius || 0}
-                          rotation={el.rotation || 0}
-                          draggable
-                          onClick={(e) => {
-                            e.cancelBubble = true;
-                            setSelectedId(el.id);
-                          }}
-                          onTap={(e) => {
-                            e.cancelBubble = true;
-                            setSelectedId(el.id);
-                          }}
-                          onDragEnd={(e) =>
-                            updateElement({
-                              ...el,
-                              x: e.target.x(),
-                              y: e.target.y(),
-                            })
-                          }
-                          onTransformEnd={(e) => {
-                            const node = e.target;
-                            const scaleX = node.scaleX();
-                            const scaleY = node.scaleY();
-                            node.scaleX(1);
-                            node.scaleY(1);
-                            updateElement({
-                              ...el,
-                              x: node.x(),
-                              y: node.y(),
-                              rotation: node.rotation(),
-                              width: Math.max(
-                                1,
-                                Math.round(node.width() * scaleX)
-                              ),
-                              height: Math.max(
-                                1,
-                                Math.round(node.height() * scaleY)
-                              ),
-                            });
-                          }}
-                        />
-                      );
-                    }
-                    return null;
-                  })}
-
-                  <Transformer
-                    ref={trRef}
-                    rotateEnabled={true}
-                    anchorSize={8}
-                  />
-                </Layer>
-              </Stage>
-            </CanvasContainer>
-
-            <div
-              style={{
-                position: "absolute",
-                left: 0,
-                top: 0,
-                width: template.width * zoom,
-                height: template.height * zoom,
-                pointerEvents: "none",
-              }}
-            >
-              <CanvasResizer
-                width={template.width * zoom}
-                height={template.height * zoom}
-                onResize={handleCanvasResize}
-              />
-            </div>
-          </div>
-        </div>
+        <GenerateModal
+          isOpen={showGenerateModal}
+          onClose={() => setShowGenerateModal(false)}
+          onGenerate={handleGenerate}
+        />
       </div>
     </div>
   );

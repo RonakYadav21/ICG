@@ -77,7 +77,7 @@ const StudentDetailPage = () => {
                 >
                   <option value="">-- Select a course --</option>
                   {courses.map((course) => (
-                    <option key={course.id} value={course.id}>
+                    <option key={course.id} value={course.courseId}>
                       {course.courseName}
                     </option>
                   ))}
@@ -119,6 +119,9 @@ const StudentDetailPage = () => {
                     <th className="px-6 py-3 text-center text-lg font-medium uppercase tracking-wider">
                       Course ID
                     </th>
+                    <th className="px-6 py-3 text-center text-lg font-medium uppercase tracking-wider">
+                      Program Name
+                    </th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-200">
@@ -144,6 +147,9 @@ const StudentDetailPage = () => {
                       </td>
                       <td className="px-6 py-4 text-center text-gray-700">
                         {student.courseId}
+                      </td>
+                      <td className="px-6 py-4 text-center text-gray-700">
+                        {student.programName}
                       </td>
                     </tr>
                   ))}

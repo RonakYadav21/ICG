@@ -136,7 +136,6 @@ const StudentDashboard = () => {
         studentPhoto: formData.studentPhoto,
         courseId: Number(formData.courseId),
       };
-
       const res = await studentRegistration(submissionData);
 
       toast.success("Student registered successfully!");
@@ -230,6 +229,7 @@ const StudentDashboard = () => {
                     <input
                       type="text"
                       name="firstName"
+                      required
                       value={formData.firstName}
                       onChange={changeHandler}
                       placeholder="John"
@@ -243,6 +243,7 @@ const StudentDashboard = () => {
                     <input
                       type="text"
                       name="lastName"
+                      required
                       value={formData.lastName}
                       onChange={changeHandler}
                       placeholder="Doe"
@@ -258,6 +259,7 @@ const StudentDashboard = () => {
                   <input
                     type="text"
                     name="fatherName"
+                    required
                     value={formData.fatherName}
                     onChange={changeHandler}
                     placeholder="Joe Doe"
@@ -273,6 +275,7 @@ const StudentDashboard = () => {
                     <input
                       type="email"
                       name="emailAddress"
+                      required
                       value={formData.emailAddress}
                       onChange={changeHandler}
                       placeholder="DoeJohn@gmail.com"
@@ -286,9 +289,10 @@ const StudentDashboard = () => {
                     <input
                       type="tel"
                       name="phoneNo"
+                      required
                       value={formData.phoneNo}
                       onChange={changeHandler}
-                      placeholder="+9123456789"
+                      placeholder="9123456789"
                       className="w-full border border-gray-300 rounded-lg px-4 py-3 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none text-lg"
                     />
                   </div>
@@ -301,6 +305,7 @@ const StudentDashboard = () => {
                   <input
                     type="date"
                     name="dateOfBirth"
+                    required
                     value={formData.dateOfBirth}
                     onChange={changeHandler}
                     max={new Date().toISOString().split("T")[0]}
@@ -315,6 +320,7 @@ const StudentDashboard = () => {
                   <textarea
                     name="address"
                     value={formData.address}
+                    required
                     onChange={changeHandler}
                     rows="3"
                     placeholder="123 Main Street, City, State, ZIP"
@@ -339,6 +345,7 @@ const StudentDashboard = () => {
                   <input
                     type="text"
                     name="enrollmentNo"
+                    required
                     value={formData.enrollmentNo}
                     onChange={changeHandler}
                     placeholder="DE22020XX"
@@ -352,6 +359,7 @@ const StudentDashboard = () => {
                   </label>
                   <select
                     name="courseId"
+                    required
                     value={formData.courseId}
                     onChange={(e) => {
                       const selectedId = e.target.value;
@@ -385,6 +393,7 @@ const StudentDashboard = () => {
                   <input
                     type="text"
                     name="rollNo"
+                    required
                     value={formData.rollNo}
                     onChange={changeHandler}
                     placeholder="IC-2K22-01"
@@ -398,6 +407,7 @@ const StudentDashboard = () => {
                   </label>
                   <input
                     type="text"
+                    required
                     name="admissionBatch"
                     value={formData.admissionBatch}
                     onChange={changeHandler}
@@ -412,7 +422,7 @@ const StudentDashboard = () => {
                   </label>
                   <input
                     type="file"
-                    accept="image/jpeg,image/png"
+                    accept="image/jpeg,image/png/jpg"
                     onChange={handleFileChange}
                     disabled={uploading}
                     className={`w-full border border-dashed border-gray-400 rounded-lg px-4 py-6 text-center cursor-pointer focus:outline-none ${

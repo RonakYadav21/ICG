@@ -5,8 +5,8 @@ import TemplateList from "../components/IdCardEditor/TemplateList";
 export default function EditorPage() {
   const [selectedTemplate, setSelectedTemplate] = useState(null);
   return (
-    <div className="min-h-screen p-6">
-      <div className="flex">
+    <div className="">
+      <div className="w-full mb-10">
         <TemplateList
           onSelect={(temp) => {
             const parsedElements = JSON.parse(temp.elementsJson);
@@ -25,8 +25,8 @@ export default function EditorPage() {
             });
           }}
         />
-        <IdCardEditor initialTemplate={selectedTemplate} />
       </div>
+      <IdCardEditor initialTemplate={selectedTemplate} />
     </div>
   );
 }
