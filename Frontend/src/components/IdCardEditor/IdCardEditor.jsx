@@ -445,72 +445,130 @@ export default function IdCardEditor({ initialTemplate }) {
   };
 
   // called from Sidebar/GenerateModal with array of selected student IDs and the courseId
-  const handleGenerateCards = async ({ courseId, selectedStudentIds }) => {
-    if (!template.id) {
-      alert("Please save template before generating ID cards.");
+ // called from Sidebar/GenerateModal with array of selected student IDs and the courseId
+const handleGenerateCards = async ({ courseId, selectedStudentIds }) => {
+  if (!template.id) {
+    alert("Please save template before generating ID cards.");
+    return;
+  }
+
+  try {
+    setIsGenerating(true);
+
+    // fetch students
+    const studentsForCourse = await getStudentsByCourse(courseId);
+
+    const students = studentsForCourse.filter((s) =>
+      (selectedStudentIds || []).includes(s.id),
+    );
+
+    if (students.length === 0) {
+      toast.error("No students selected or found.");
       return;
     }
 
-    try {
-      setIsGenerating(true);
+    const zip = new JSZip();
 
-      // fetch students for course
-      const studentsForCourse = await getStudentsByCourse(courseId);
-      const students = studentsForCourse.filter((s) =>
-        (selectedStudentIds || []).includes(s.id),
+    // backup original elements
+    const originalElements = [...elements];
+
+    for (let i = 0; i < students.length; i++) {
+      const student = students[i];
+
+      console.log("Current Student:", student);
+
+      // IMPORTANT
+      // placeholders must match these keys
+     const studentData = {
+  fullName:
+    `${student.firstName || ""} ${student.lastName || ""}`.trim(),
+
+  fatherName:
+    student.fatherName || "",
+
+  rollNo:
+    student.rollNo || "",
+
+  enrollmentNo:
+    student.enrollmentNo || "",
+
+  admissionBatch:
+    student.admissionBatch || "",
+
+  programName:
+    student.programName || "",
+
+  email:
+    student.emailAddress || "",
+
+  phone:
+    student.phoneNo || "",
+
+  address:
+    student.address || "",
+
+  dateOfBirth:
+    student.dateOfBirth || "",
+
+  photo:
+    student.studentPhoto || "",
+};
+
+      console.log("Mapped Student Data:", studentData);
+
+      // merge placeholders
+      const merged = mergeTemplateWithData(
+        {
+          ...template,
+          elements: originalElements,
+        },
+        studentData
       );
 
-      if (students.length === 0) {
-        toast.error("No students selected or found for the course.");
-        return;
-      }
+      console.log("Merged Elements:", merged.elements);
 
-      const zip = new JSZip();
-      const originalElements = [...elements];
+      // update canvas
+      setElements(merged.elements);
 
-      for (let i = 0; i < students.length; i++) {
-        const student = students[i];
+      // wait for render
+      await new Promise((res) => setTimeout(res, 500));
 
-        // merge template placeholders with student data
-        const merged = mergeTemplateWithData(template, {
-          ...student,
-          photo: student.studentPhoto,
-        });
-        setElements(merged.elements);
-
-        // wait for stage to render
-        await new Promise((res) => setTimeout(res, 100));
-
-        // export PNG
-        const dataUrl = stageRef.current.toDataURL({ pixelRatio: 2 });
-        const blob = await (await fetch(dataUrl)).blob();
-
-        const safeName = `${student.firstName}_${student.lastName}.png`.replace(
-          /[^\w\-_. ]+/g,
-          "_",
-        );
-        zip.file(safeName, blob);
-      }
-
-      // restore original template elements
-      setElements(originalElements);
-
-      // generate ZIP and download
-      const zipBlob = await zip.generateAsync({
-        type: "blob",
-        compression: "DEFLATE",
+      // export png
+      const dataUrl = stageRef.current.toDataURL({
+        pixelRatio: 2,
       });
-      saveAs(zipBlob, `${template.name || "idcards"}.zip`);
 
-      toast.success("ID cards generated successfully!");
-    } catch (err) {
-      console.error("Generate failed:", err);
-      toast.error(err.message || "Failed to generate ID cards");
-    } finally {
-      setIsGenerating(false);
+      const blob = await (await fetch(dataUrl)).blob();
+
+      const safeName =
+        `${studentData.fullName || "student"}.png`
+          .replace(/[^\w\-_. ]+/g, "_");
+
+      zip.file(safeName, blob);
     }
-  };
 
+    // restore original template
+    setElements(originalElements);
+
+    // download zip
+    const zipBlob = await zip.generateAsync({
+      type: "blob",
+      compression: "DEFLATE",
+    });
+
+    saveAs(
+      zipBlob,
+      `${template.name || "idcards"}.zip`
+    );
+
+    toast.success("ID cards generated successfully!");
+  } catch (err) {
+    console.error("Generate failed:", err);
+    toast.error(err.message || "Failed to generate ID cards");
+  } finally {
+    setIsGenerating(false);
+  }
+};
   // helper to trigger download using file-saver
   const saveBlob = (blob, filename) => {
     // dynamic import to keep bundle small if file-saver not installed globally

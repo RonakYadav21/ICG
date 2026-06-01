@@ -98,10 +98,10 @@ const Contact = () => {
                 📍 <b>Address:</b> IIPS DAVV, Indore (M.P), India
               </li>
               <li>
-                📧 <b>Email:</b> khansarah0716@gmail.com
+                📧 <b>Email:</b> ronakyadav9977@gmail.com
               </li>
               <li>
-                🕒 <b>Hours:</b> Mon–Fri: 10:00 AM – 6:00 PM
+                  📧 <b>Email:</b> khansarah0716@gmail.com
               </li>
             </ul>
           </div>

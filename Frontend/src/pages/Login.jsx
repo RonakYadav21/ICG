@@ -86,6 +86,15 @@ export default function Login() {
           >
             Log In
           </button>
+          <p className="text-center text-sm text-gray-600">
+  Don&apos;t have an admin account?{" "}
+  <span
+    className="text-orange-600 cursor-pointer hover:underline font-medium"
+    onClick={() => navigate("/Signup")}
+  >
+    Create Account
+  </span>
+</p>
         </form>
       </div>
     </div>

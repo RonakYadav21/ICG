@@ -66,7 +66,8 @@ const StudentDashboard = () => {
     const imgData = new FormData();
     imgData.append("file", file);
     imgData.append("upload_preset", UPLOAD_PRESET);
-
+   console.log("Cloud Name:", CLOUD_NAME);
+console.log("Upload Preset:", UPLOAD_PRESET);
     try {
       const res = await fetch(
         `https://api.cloudinary.com/v1_1/${CLOUD_NAME}/image/upload`,

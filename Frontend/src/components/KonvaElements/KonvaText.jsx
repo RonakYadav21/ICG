@@ -21,101 +21,151 @@ const KonvaText = forwardRef(
       align: "left",
     };
 
-    const handleDblClick = (e) => {
-      try {
-        const stage = e.target.getStage();
-        const absPos = e.target.getAbsolutePosition();
-        const stageBox = stage.container().getBoundingClientRect();
-        const area = document.createElement("textarea");
+   const handleDblClick = (e) => {
+  try {
+    const textNode = e.target;
+    const stage = textNode.getStage();
 
-        let cleaned = false;
-        const cleanup = () => {
-          if (cleaned) return;
-          cleaned = true;
-          try {
-            area.removeEventListener("keydown", onKeyDown);
-            area.removeEventListener("blur", onBlur);
-          } catch (err) {
-            // ignore
-          }
-          if (area.parentNode) {
-            try {
-              area.parentNode.removeChild(area);
-            } catch (err) {
-              // ignore
-            }
-          }
-        };
+    // stage container position
+    const stageBox = stage.container().getBoundingClientRect();
 
-        const applyChanges = () => {
-          const newText = area.value;
-          onChange({
-            ...shape,
-            props: {
-              ...shape.props,
-              text: newText,
-            },
-          });
-          cleanup();
-        };
+    // current zoom scale
+    const scaleX = stage.scaleX();
+    const scaleY = stage.scaleY();
 
-        const onKeyDown = (ev) => {
-          if (ev.key === "Enter" && !ev.shiftKey) {
-            ev.preventDefault();
-            applyChanges();
-          } else if (ev.key === "Escape") {
-            cleanup();
-          }
-        };
+    // text absolute position inside stage
+    const absPos = textNode.getAbsolutePosition();
 
-        const onBlur = () => {
-          // blur can happen after keydown: guard in cleanup
-          applyChanges();
-        };
+    // create textarea
+    const area = document.createElement("textarea");
 
-        const fontSize = shape.props.fontSize || defaultStyles.fontSize;
-        const textareaStyles = {
-          position: "absolute",
-          top: `${stageBox.top + absPos.y}px`,
-          left: `${stageBox.left + absPos.x}px`,
-          fontSize: `${fontSize}px`,
-          fontFamily: shape.props.fontFamily || defaultStyles.fontFamily,
-          color: shape.props.fill || defaultStyles.fill,
-          padding: `6px`,
-          border: "1px solid rgba(0,0,0,0.15)",
-          borderRadius: "4px",
-          background: "rgba(255,255,255,0.95)",
-          boxShadow: "0 2px 6px rgba(0,0,0,0.12)",
-          minWidth: "120px",
-          minHeight: "24px",
-          maxWidth: "60vw",
-          maxHeight: "60vh",
-          outline: "none",
-          resize: "both",
-          overflow: "auto",
-          lineHeight: defaultStyles.lineHeight,
-          letterSpacing: `${
-            shape.props.letterSpacing || defaultStyles.letterSpacing
-          }px`,
-          textAlign: shape.props.align || defaultStyles.align,
-          zIndex: 9999,
-        };
+    let cleaned = false;
 
-        Object.assign(area.style, textareaStyles);
-        area.value = shape.props.text || "";
-        document.body.appendChild(area);
-        area.focus();
+    const cleanup = () => {
+      if (cleaned) return;
+      cleaned = true;
 
-        area.addEventListener("keydown", onKeyDown);
-        area.addEventListener("blur", onBlur);
+      area.removeEventListener("keydown", onKeyDown);
+      area.removeEventListener("blur", onBlur);
 
-        // safety: if component unmounts, ensure cleanup
-        const onBeforeUnload = () => cleanup();
-        window.addEventListener("beforeunload", onBeforeUnload, { once: true });
-      } catch (error) {
-        console.error("Error in handleDblClick:", error);
+      if (area.parentNode) {
+        area.parentNode.removeChild(area);
       }
     };
+
+    const applyChanges = () => {
+      onChange({
+        ...shape,
+        props: {
+          ...shape.props,
+          text: area.value,
+        },
+      });
+
+      cleanup();
+    };
+
+    const onKeyDown = (ev) => {
+      if (ev.key === "Enter" && !ev.shiftKey) {
+        ev.preventDefault();
+        applyChanges();
+      }
+
+      if (ev.key === "Escape") {
+        cleanup();
+      }
+    };
+
+    const onBlur = () => {
+      applyChanges();
+    };
+
+    // CORRECT POSITION
+    const areaX =
+      stageBox.left +
+      window.scrollX +
+      absPos.x * scaleX;
+
+    const areaY =
+      stageBox.top +
+      window.scrollY +
+      absPos.y * scaleY;
+
+    // styles
+    Object.assign(area.style, {
+      position: "absolute",
+
+      top: `${areaY}px`,
+      left: `${areaX}px`,
+
+      width: `${Math.max(
+        textNode.width() * scaleX,
+        120
+      )}px`,
+
+      minHeight: "30px",
+
+      fontSize: `${
+        (shape.props.fontSize || 20) * scaleY
+      }px`,
+
+      fontFamily:
+        shape.props.fontFamily || "Poppins",
+
+      color: shape.props.fill || "#111",
+
+      lineHeight:
+        shape.props.lineHeight || 1.2,
+
+      letterSpacing: `${
+        shape.props.letterSpacing || 0
+      }px`,
+
+      textAlign: shape.props.align || "left",
+
+      background: "white",
+      border: "1px solid #ccc",
+      borderRadius: "6px",
+
+      padding: "4px",
+
+      margin: "0px",
+
+      overflow: "hidden",
+
+      resize: "none",
+
+      outline: "none",
+
+      zIndex: 9999,
+    });
+
+    // rotation support
+    const rotation = textNode.rotation();
+
+    area.style.transformOrigin = "left top";
+
+    area.style.transform =
+      rotation !== 0
+        ? `rotate(${rotation}deg)`
+        : "";
+
+    area.value = shape.props.text || "";
+
+    document.body.appendChild(area);
+
+    area.focus();
+
+    area.select();
+
+    area.addEventListener("keydown", onKeyDown);
+
+    area.addEventListener("blur", onBlur);
+
+  } catch (error) {
+    console.error("Error in handleDblClick:", error);
+  }
+};
 
     return (
       <Text
