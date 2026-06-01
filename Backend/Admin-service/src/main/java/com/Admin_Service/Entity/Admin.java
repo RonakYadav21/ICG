@@ -34,7 +34,7 @@ public class Admin {
 
     private String role = "ROLE_ADMIN"; // system controlled
 
-    private String status = "ACTIVE";   // or "PENDING"
+    private String status = "PENDING";   // or "PENDING"
 
     private LocalDateTime createdAt = LocalDateTime.now();
 }

@@ -25,7 +25,7 @@ public boolean isTokenValid(String token) {
 }
 
 public  Claims extractAllClaims(String token) {
-Key key=Keys.hmacShaKeyFor(secretKey.getBytes());
+Key key=Keys.hmacShaKeyFor(secretKey.getBytes());//Creates a cryptographic signing key for JWT verification.
 return Jwts.parserBuilder()//Create a JWT parser
 		.setSigningKey(key)   // 2. Provide the secret key (used to verify signature)
 		.build()

@@ -39,38 +39,82 @@ public class Controller {
     @Autowired
     PasswordEncoder passwordEncoder;
 	
-	  @PostMapping("/login")
-	    public ResponseEntity<?> login(@RequestBody LoginRequest loginRequest) {
-	    	System.out.println(loginRequest.getUsername());
-	    	System.out.println(loginRequest.getPassword());
-	        try {
-	            authenticationManager.authenticate(    //This is where SecurityConfig comes into play.
-	                new UsernamePasswordAuthenticationToken(   
-	                    loginRequest.getUsername(), loginRequest.getPassword())
-	            );
-	        } catch (BadCredentialsException e) {
-	            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-	                                 .body("Invalid username or password");
-	        }
-	        final UserDetails userDetails = userDetailsService.loadUserByUsername(loginRequest.getUsername());
-	        final String jwt = jwtUtil.generateToken(userDetails);
-	        return ResponseEntity.ok(new JwtResponse(jwt));
-	    }
+    @PostMapping("/login")
+    public ResponseEntity<?> login(
+            @RequestBody LoginRequest loginRequest
+    ) {
+
+        try {
+
+            authenticationManager.authenticate(
+                    new UsernamePasswordAuthenticationToken(  //Creates authentication object:UsernamePasswordAuthenticationToken
+
+                            loginRequest.getUsername(),
+                            loginRequest.getPassword()
+                    )
+            );
+
+        } catch (BadCredentialsException e) {
+
+            return ResponseEntity
+                    .status(HttpStatus.UNAUTHORIZED)
+                    .body("Invalid username or password");
+        }
+
+        // LOAD USER
+        final UserDetails userDetails =
+                userDetailsService.loadUserByUsername(
+                        loginRequest.getUsername()
+                );
+
+        // CAST TO YOUR CUSTOM USER ENTITY
+        Users authUser = userrepo
+                .findByUsername(loginRequest.getUsername())
+                .orElseThrow(() ->
+                        new RuntimeException("User not found"));
+
+        // CHECK STATUS
+        if (!authUser.getStatus().equalsIgnoreCase("ACTIVE")) {
+
+            return ResponseEntity
+                    .status(HttpStatus.FORBIDDEN)
+                    .body("Your account is pending approval");
+        }
+
+        // GENERATE JWT
+        final String jwt =
+                jwtUtil.generateToken(userDetails);
+
+        return ResponseEntity.ok(
+                new JwtResponse(jwt)
+        );
+    }
 	
-	 @PostMapping("/register")  // will be called when a user register in their micorservice  by that microservice
-	    public ResponseEntity<?> register(@RequestBody RegisterAuthUserRequest request) {
-	        if (userrepo.existsByUsername(request.getUsername())) {
-	            return ResponseEntity.status(HttpStatus.CONFLICT).body("User already exists");
-	        }
+    @PostMapping("/register")
+    public ResponseEntity<?> register(
+            @RequestBody RegisterAuthUserRequest request
+    ) {
 
-	        Users user = Users.builder()
-	            .username(request.getUsername())
-	            .password(request.getPassword())
-	            .role(request.getRole())
-	            .build();
+        if (userrepo.existsByUsername(
+                request.getUsername()
+        )) {
 
-	        userrepo.save(user);
+            return ResponseEntity
+                    .status(HttpStatus.CONFLICT)
+                    .body("User already exists");
+        }
 
-	        return ResponseEntity.ok("User registered in AuthService");
-	    }
+        Users user = Users.builder()
+                .username(request.getUsername())
+                .password( request.getPassword())
+                .role(request.getRole())
+                .status(request.getStatus())
+                .build();
+
+        userrepo.save(user);
+
+        return ResponseEntity.ok(
+                "User registered in AuthService"
+        );
+    }
 }

@@ -1,4 +1,5 @@
-
+target/
+.git/
+.idea/
+.vscode/
 *.log
-.idea
-.vscode

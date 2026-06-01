@@ -13,4 +13,5 @@ public class RegisterAuthUserRequest {
     private String username; // email
     private String password;
     private String role; // e.g., "ROLE_STUDENT", "ROLE_COMPANY"
+    private String status;
 }

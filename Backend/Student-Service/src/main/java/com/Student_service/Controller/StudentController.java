@@ -7,6 +7,7 @@ import com.Student_service.Entity.Student;
 import com.Student_service.Service.StudentService;
 import com.Student_service.repository.StudentRepository;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -30,16 +31,25 @@ public class StudentController {
         return ResponseEntity.ok(savedStudent);
     }
 
-//    @GetMapping("/checkStudent/{email}")
-//    public ResponseEntity<Map<String, Boolean>> checkStudent(@PathVariable String email) {
-//        boolean registered = studentService.isStudentRegistered(email);
-//        return ResponseEntity.ok(Map.of("registered", registered));
-//    }
-
+//  
     //  New endpoint
     @GetMapping("/by-course/{courseId}")
     public ResponseEntity<List<Student>> getStudentsByCourse(@PathVariable Long courseId) {
         List<Student> students = studentService.getStudentsByCourseId(courseId);
         return ResponseEntity.ok(students);
+    }
+    
+    @GetMapping("/dashboard-stats")
+    public Map<String, Long> getDashboardStats() {
+
+        Map<String, Long> stats = new HashMap<>();
+
+        stats.put("totalStudents",
+                studentRepository.count());
+
+//        stats.put("pendingApprovals",
+//                studentRepository.countByStatus("pending"));
+
+        return stats;
     }
 }

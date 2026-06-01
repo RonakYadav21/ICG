@@ -4,19 +4,25 @@ import org.springframework.web.bind.annotation.*;
 import com.TemplateService.DTO.FilledTemplateDTO;
 import com.TemplateService.DTO.TemplateRequestDTO;
 import com.TemplateService.Entity.IDCardTemplate;
+import com.TemplateService.Repository.IDCardTemplateRepository;
 import com.TemplateService.Service.IDCardTemplateService;
 import com.TemplateService.Service.TemplateFillerService;
+
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 @RestController
 @RequestMapping("/templates")
 public class IDCardTemplateController {
 
     private final IDCardTemplateService templateService;
-    private final TemplateFillerService fillerService;
+     private final TemplateFillerService fillerService;
+     private final IDCardTemplateRepository templateRepository;
 
-    public IDCardTemplateController(IDCardTemplateService templateService, TemplateFillerService fillerService) {
+    public IDCardTemplateController(IDCardTemplateService templateService, TemplateFillerService fillerService,IDCardTemplateRepository templateRepository) {
         this.templateService = templateService;
         this.fillerService = fillerService;
+        this.templateRepository=templateRepository;
     }
 
     @PostMapping
@@ -56,5 +62,17 @@ public class IDCardTemplateController {
     public ResponseEntity<IDCardTemplate> saveTemplate(@RequestBody TemplateRequestDTO dto) {
         IDCardTemplate savedTemplate = templateService.saveTemplate(dto);
         return ResponseEntity.ok(savedTemplate);
+    }
+    
+
+    @GetMapping("/dashboard-stats")
+    public Map<String, Long> getDashboardStats() {
+
+        Map<String, Long> stats = new HashMap<>();
+
+        stats.put("totalTemplates",
+                templateRepository.count());
+
+        return stats;
     }
 }

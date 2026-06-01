@@ -15,7 +15,7 @@ import com.auth_service.UserService.CustomUserDetailsService;
 
 
 @Configuration
-@EnableWebSecurity
+@EnableWebSecurity //Activates Spring Security.
 public class SecurityConfig {
 
     private final CustomUserDetailsService userDetailsService;
@@ -26,7 +26,7 @@ public class SecurityConfig {
 
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception {
-        // This obtains the AuthenticationManager from the framework
+        // This obtains the AuthenticationManager from the spring  framework
         return config.getAuthenticationManager();
     }
 
@@ -37,13 +37,20 @@ public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        http.csrf(csrf -> csrf.disable())
+        http.csrf(csrf -> csrf.disable())//it turns off the built-in protection against Cross-Site Request
             .authorizeHttpRequests(auth -> auth  //The first auth is the parameter passed into the lambda   The second auth is calling methods like .requestMatchers()
-            		   .requestMatchers("/auth/register", "/auth/login").permitAll()  
+            		   .requestMatchers("/swagger-ui.html",
+            	                "/swagger-ui/**",
+            	                "/v3/api-docs/**",
+            	                "/auth/v3/api-docs",
+            	                "/student/v3/api-docs",
+            	                "/Admin/v3/api-docs",
+            	                "/templates/v3/api-docs",
+            	                "/auth/register", "/auth/login","/student/studentRegistration").permitAll()  
             		   .anyRequest().authenticated()
             )
             .userDetailsService(userDetailsService)
-            .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
+            .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));//NO HTTP session will be created.
 
         return http.build();
     }

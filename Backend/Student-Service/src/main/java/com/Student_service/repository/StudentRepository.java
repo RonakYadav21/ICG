@@ -12,5 +12,5 @@ public interface StudentRepository extends JpaRepository<Student, Long> {
     // Fetch all students by course/program name
     List<Student> findByProgramNameIgnoreCase(String programName);
     List<Student> findByCourseId(Long courseId);
-
+    long countByStatus(String status);
 }

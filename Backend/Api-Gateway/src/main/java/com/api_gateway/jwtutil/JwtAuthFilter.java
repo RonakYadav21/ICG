@@ -16,13 +16,13 @@ public class JwtAuthFilter implements GatewayFilter {
     @Autowired
     private JwtUtil jwtUtil;
 
-    @Override
-    public Mono<Void> filter(ServerWebExchange exchange, GatewayFilterChain chain) {
+    @Override //ServerWebExchange represents the complete HTTP request-response interaction in Spring WebFlux applications.
+    public Mono<Void> filter(ServerWebExchange exchange, GatewayFilterChain chain) {//GatewayFilterChain represents the sequence of filters through which the request flows before reaching the target microservice.
         String path = exchange.getRequest().getURI().getPath();
 
         //  Allow public URLs without token
         if (path.contains("/signup") || path.contains("/login") || path.startsWith("/auth/")) {
-            return chain.filter(exchange);
+            return chain.filter(exchange); //Continue filter chain and routing process.
         }
 
         String authHeader = exchange.getRequest().getHeaders().getFirst(HttpHeaders.AUTHORIZATION);
@@ -30,7 +30,7 @@ public class JwtAuthFilter implements GatewayFilter {
             exchange.getResponse().setStatusCode(HttpStatus.UNAUTHORIZED);
             return exchange.getResponse().setComplete();
         }
-
+   //authentication
         String token = authHeader.substring(7);
         if (!jwtUtil.isTokenValid(token)) {
             exchange.getResponse().setStatusCode(HttpStatus.UNAUTHORIZED);
@@ -40,7 +40,7 @@ public class JwtAuthFilter implements GatewayFilter {
         Claims claims = jwtUtil.extractAllClaims(token);
         String role = claims.get("role", String.class);
         
-        //  Role-based route access
+        //  Role-based route access- authorization
         if (
             (path.startsWith("/Admin/") && !role.equals("ROLE_ADMIN"))) {
             exchange.getResponse().setStatusCode(HttpStatus.FORBIDDEN);
