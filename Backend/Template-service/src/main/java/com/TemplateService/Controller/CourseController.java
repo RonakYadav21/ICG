@@ -18,7 +18,7 @@ import lombok.RequiredArgsConstructor;
 public class CourseController {
 	  private final CourseService courseService;
 	    //  Get all courses
-	    @GetMapping("/all")
+	    @GetMapping("/allcourse")
 	    public ResponseEntity<List<Course>> getAllCourses() {
 	        return ResponseEntity.ok(courseService.getAllCourses());
 	    }

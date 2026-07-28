@@ -40,6 +40,7 @@ public class GatewayRoutes {
 				//public routing
    .route("Auth-Service",r->r.path("/auth/**").uri("lb://AUTH-SERVICE"))
    .route("Student",r->r.path("/student/**").uri("lb://STUDENT-SERVICE"))
+   .route("Template-Service", r -> r.path("/templates/allcourse").uri("lb://TEMPLATE-SERVICE"))
    .route("Admin-Signup", r -> r.path("/Admin/signup")
 		   .uri("lb://ADMIN-SERVICE"))
 	    
@@ -67,7 +68,7 @@ public class GatewayRoutes {
                    .uri("lb://AUTH-SERVICE"))
 
    .route("Admin-Service", r -> r
-		    .path("/Admin/**", "/v3/api-docs/Admin")
+		    .path("/Admin/**", "/v3/api-docs/Admin") 
 		    .uri("lb://ADMIN-SERVICE"))
    
    .route("Template-Service-Swagger",
@@ -84,6 +85,6 @@ public class GatewayRoutes {
            .filters(f -> f.filter(jwtAuthFilter))
            .uri("lb://ADMIN-SERVICE"))
        .build();
-  
+   
 }
 }

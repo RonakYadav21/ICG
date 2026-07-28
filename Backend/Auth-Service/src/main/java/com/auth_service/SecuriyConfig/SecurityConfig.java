@@ -26,7 +26,7 @@ public class SecurityConfig {
 
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception {
-        // This obtains the AuthenticationManager from the spring  framework
+        // This obtains the AuthenticationManager from the spring  framework The AuthenticationManager asks Spring Security to authenticate the credentials.
         return config.getAuthenticationManager();
     }
 
