@@ -13,9 +13,7 @@ public class TemplateRequestDTO {
     private String borderColor;
     private Integer borderWidth;
 
-    // JSON from frontend editor (fabric.js or similar)
     private String elementsJson;
 
-    // Meta info (college, createdBy, etc.)
     private String meta;
 }

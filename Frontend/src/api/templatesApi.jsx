@@ -22,7 +22,7 @@ export const saveTemplate = async (template) => {
 
 export const getAllTemplates = async () => {
   try {
-    const res = await api.get(`/templates`);
+    const res = await api.get(`/templates/getalltemplates`);
     return res.data || [];
   } catch (error) {
     const msg =

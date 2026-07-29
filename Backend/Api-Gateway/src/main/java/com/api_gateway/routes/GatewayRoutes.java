@@ -85,6 +85,6 @@ public class GatewayRoutes {
            .filters(f -> f.filter(jwtAuthFilter))
            .uri("lb://ADMIN-SERVICE"))
        .build();
-   
+    
 }
 }

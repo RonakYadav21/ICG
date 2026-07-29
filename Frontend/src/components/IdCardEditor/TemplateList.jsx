@@ -7,7 +7,7 @@ export default function TemplateList({ onSelect }) {
 
   useEffect(() => {
     api
-      .get("/templates")
+      .get("/templates/getalltemplates")
       .then((res) => setTemplates(res.data))
       .catch((err) => console.error(err));
   }, []);

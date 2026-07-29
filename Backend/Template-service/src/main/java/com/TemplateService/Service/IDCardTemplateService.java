@@ -22,11 +22,11 @@ public class IDCardTemplateService {
         this.templateRepository = templateRepository;
     }
 
-    public IDCardTemplate createTemplate(IDCardTemplate template) {
-        return templateRepository.save(template);
-    }
+//    public IDCardTemplate createTemplate(IDCardTemplate template) {
+//        return templateRepository.save(template);
+//    }
 
-    public List<IDCardTemplate> getAllTemplates() {
+    public List<IDCardTemplate> getAllTemplates() { 
         return templateRepository.findAll();
     }
 

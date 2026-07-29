@@ -1,12 +1,12 @@
 package com.TemplateService.Controller;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import com.TemplateService.DTO.FilledTemplateDTO;
+//import com.TemplateService.DTO.FilledTemplateDTO;
 import com.TemplateService.DTO.TemplateRequestDTO;
 import com.TemplateService.Entity.IDCardTemplate;
 import com.TemplateService.Repository.IDCardTemplateRepository;
 import com.TemplateService.Service.IDCardTemplateService;
-import com.TemplateService.Service.TemplateFillerService;
+//import com.TemplateService.Service.TemplateFillerService;
 
 import java.util.HashMap;
 import java.util.List;
@@ -16,21 +16,21 @@ import java.util.Map;
 public class IDCardTemplateController {
 
     private final IDCardTemplateService templateService;
-     private final TemplateFillerService fillerService;
+//     private final TemplateFillerService fillerService;
      private final IDCardTemplateRepository templateRepository;
 
-    public IDCardTemplateController(IDCardTemplateService templateService, TemplateFillerService fillerService,IDCardTemplateRepository templateRepository) {
+    public IDCardTemplateController(IDCardTemplateService templateService,IDCardTemplateRepository templateRepository) {
         this.templateService = templateService;
-        this.fillerService = fillerService;
+//        this.fillerService = fillerService;
         this.templateRepository=templateRepository;
     }
 
-    @PostMapping
-    public IDCardTemplate createTemplate(@RequestBody IDCardTemplate template) {
-        return templateService.createTemplate(template);
-    }
+//    @PostMapping
+//    public IDCardTemplate createTemplate(@RequestBody IDCardTemplate template) {
+//        return templateService.createTemplate(template);
+//    }
 
-    @GetMapping
+    @GetMapping("/getalltemplates")
     public List<IDCardTemplate> getAllTemplates() {
         return templateService.getAllTemplates();
     }
@@ -49,22 +49,14 @@ public class IDCardTemplateController {
     public void deleteTemplate(@PathVariable Long id) {
         templateService.deleteTemplate(id);
     }
-    // Fill data for all students of a course
-    @GetMapping("/{templateId}/fill")
-    public List<FilledTemplateDTO> generateForCourse(
-            @PathVariable Long templateId,
-            @RequestParam Long courseId) {
-        IDCardTemplate template = templateService.getTemplateById(templateId)
-                .orElseThrow(() -> new RuntimeException("Template not found"));
-        return fillerService.fillTemplateForCourse(template, courseId);
-    }
+  
     @PostMapping("/save")
     public ResponseEntity<IDCardTemplate> saveTemplate(@RequestBody TemplateRequestDTO dto) {
         IDCardTemplate savedTemplate = templateService.saveTemplate(dto);
         return ResponseEntity.ok(savedTemplate);
     }
     
-
+  
     @GetMapping("/dashboard-stats")
     public Map<String, Long> getDashboardStats() {
 

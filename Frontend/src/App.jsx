@@ -12,6 +12,7 @@ import ProtectedRoute from "./components/ProtectedRoute";
 import { AuthProvider } from "./context/AuthContext";
 import ErrorPage from "./pages/ErrorPage";
 import PendingAdmins from "./pages/PendingAdmins";
+import AddCourse from "./pages/AddCourses";
 const App = () => {
   return (
     <Router>
@@ -37,6 +38,11 @@ const App = () => {
               </ProtectedRoute>
             }
           />
+<Route
+  path="/admin-dashboard/add-course"
+  element={<AddCourse />}
+/>
+
           <Route
             path="/admin-dashboard/student-details"
             element={

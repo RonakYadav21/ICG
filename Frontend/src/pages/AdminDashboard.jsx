@@ -144,7 +144,12 @@ const AdminDashboard = () => {
               >
                 Open Editor
               </button>
-
+               <button
+    className="rounded-full border border-emerald-600/20 bg-emerald-50 px-6 py-3 text-sm font-semibold text-emerald-700 shadow-sm transition hover:-translate-y-0.5 hover:bg-emerald-100"
+    onClick={() => navigate("/admin-dashboard/add-course")}
+  >
+    Add Course
+  </button>
               <button
                 className="rounded-full border border-slate-900/15 bg-white/70 px-6 py-3 text-sm font-semibold text-slate-700 shadow-sm transition hover:-translate-y-0.5 hover:border-slate-900/30 hover:text-slate-900"
                 onClick={() =>
