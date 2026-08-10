@@ -4,6 +4,7 @@ import { useAuth } from "../context/AuthContext";
 import toast from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
 import id_card from "../assets/id_cards.png";
+import { FiEye, FiEyeOff } from "react-icons/fi";
 
 export default function Login() {
   const API_URL = import.meta.env.VITE_BACKEND_URL || "http://localhost:8080";
@@ -11,6 +12,7 @@ export default function Login() {
 
   const navigate = useNavigate();
   const [formData, setFormData] = useState({ email: "", password: "" });
+  const [showPassword, setShowPassword] = useState(false);
 
   const changeHandler = (e) => {
     const { name, value } = e.target;
@@ -48,7 +50,7 @@ export default function Login() {
 
       <div className="flex flex-col items-center justify-center w-full lg:w-1/2 p-6">
         <h1 className="text-4xl font-bold mb-6 text-center text-gray-800">
-          IIPS - ICG
+          IIPS ICG
         </h1>
         <p className="text-center text-gray-600 mb-8">
           Welcome to IIPS ID Card Generation Platform
@@ -56,45 +58,78 @@ export default function Login() {
 
         <form
           onSubmit={submitHandler}
-          className="w-full max-w-md space-y-5 bg-white p-8 rounded-2xl shadow-lg"
+          className="w-full max-w-md space-y-6 rounded-2xl bg-white p-8 shadow-lg"
         >
-          <div className="text-center font-semibold text-2xl text-gray-700">
+          <div className="text-center text-2xl font-semibold text-gray-700">
             Login as Admin
           </div>
 
-          <input
-            type="text"
-            placeholder="Enter your email"
-            name="email"
-            value={formData.email}
-            onChange={changeHandler}
-            className="w-full p-3 border rounded-xl focus:outline-none focus:ring"
-          />
+          <div>
+            <label
+              htmlFor="email"
+              className="mb-2 block text-sm font-medium text-gray-700"
+            >
+              Email <span className="text-red-500">*</span>
+            </label>
 
-          <input
-            type="text"
-            placeholder="Enter your password"
-            name="password"
-            value={formData.password}
-            onChange={changeHandler}
-            className="w-full p-3 border rounded-xl focus:outline-none focus:ring"
-          />
+            <input
+              id="email"
+              type="email"
+              name="email"
+              required
+              value={formData.email}
+              onChange={changeHandler}
+              placeholder="Enter your email"
+              className="w-full rounded-xl border border-gray-300 p-3 outline-none transition focus:border-orange-500 focus:ring-2 focus:ring-orange-200"
+            />
+          </div>
+
+          <div>
+            <label
+              htmlFor="password"
+              className="mb-2 block text-sm font-medium text-gray-700"
+            >
+              Password <span className="text-red-500">*</span>
+            </label>
+
+            <div className="relative">
+              <input
+                id="password"
+                type={showPassword ? "text" : "password"}
+                name="password"
+                required
+                value={formData.password}
+                onChange={changeHandler}
+                placeholder="Enter your password"
+                className="w-full rounded-xl border border-gray-300 p-3 pr-12 outline-none transition focus:border-orange-500 focus:ring-2 focus:ring-orange-200"
+              />
+
+              <button
+                type="button"
+                onClick={() => setShowPassword((prev) => !prev)}
+                className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-500 transition hover:text-orange-600"
+              >
+                {showPassword ? <FiEyeOff size={20} /> : <FiEye size={20} />}
+              </button>
+            </div>
+          </div>
 
           <button
             type="submit"
-            className="w-full p-3 rounded-xl bg-orange-600 text-white font-semibold hover:bg-orange-700 transition"
+            className="w-full rounded-xl bg-orange-600 p-3 font-semibold text-white transition hover:bg-orange-700 cursor-pointer"
           >
             Log In
           </button>
+
           <p className="text-center text-sm text-gray-600">
-  Don&apos;t have an admin account?{" "}
-  <span
-    className="text-orange-600 cursor-pointer hover:underline font-medium"
-    onClick={() => navigate("/Signup")}
-  >
-    Create Account
-  </span>
-</p>
+            Don&apos;t have an admin account?{" "}
+            <span
+              className="cursor-pointer font-medium text-orange-600 hover:underline"
+              onClick={() => navigate("/signup")}
+            >
+              Create Account
+            </span>
+          </p>
         </form>
       </div>
     </div>

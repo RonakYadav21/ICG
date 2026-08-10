@@ -2,11 +2,11 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import toast from "react-hot-toast";
+import { FiEye, FiEyeOff } from "react-icons/fi";
 import id_card from "../assets/id_cards.png";
 
 const Signup = () => {
-  const API_URL =
-    import.meta.env.VITE_BACKEND_URL || "http://localhost:8080";
+  const API_URL = import.meta.env.VITE_BACKEND_URL || "http://localhost:8080";
 
   const [formData, setFormData] = useState({
     fullName: "",
@@ -14,6 +14,8 @@ const Signup = () => {
     phoneNumber: "",
     password: "",
   });
+
+  const [showPassword, setShowPassword] = useState(false);
 
   const navigate = useNavigate();
 
@@ -30,10 +32,7 @@ const Signup = () => {
     e.preventDefault();
 
     try {
-      const res = await axios.post(
-        `${API_URL}/Admin/signup`,
-        formData
-      );
+      const res = await axios.post(`${API_URL}/Admin/signup`, formData);
 
       console.log(res);
 
@@ -43,17 +42,13 @@ const Signup = () => {
     } catch (err) {
       console.log(err);
 
-      toast.error(
-        err.response?.data?.message || "Signup failed"
-      );
+      toast.error(err.response?.data?.message || "Signup failed");
     }
   };
 
   return (
-    <div className="min-h-screen w-full flex bg-gradient-to-br from-orange-50 to-white">
-      
-      {/* Left Side Image */}
-      <div className="hidden lg:flex items-center justify-center w-1/2 p-10">
+    <div className="min-h-screen bg-[#FFF8F3] flex">
+      <div className="hidden lg:flex w-1/2 items-center justify-center p-10">
         <img
           src={id_card}
           alt="ID card preview"
@@ -61,83 +56,125 @@ const Signup = () => {
         />
       </div>
 
-      {/* Right Side Form */}
-      <div className="flex flex-col items-center justify-center w-full lg:w-1/2 p-6">
-        
-        <h1 className="text-4xl font-bold mb-6 text-center text-gray-800">
-          IIPS - ICG
+      <div className="flex w-full flex-col items-center justify-center p-6 lg:w-1/2">
+        <h1 className="mb-4 text-center text-4xl font-bold text-[#2E1C0D]">
+          IIPS ICG
         </h1>
 
-        <p className="text-center text-gray-600 mb-8">
+        <p className="mb-8 text-center text-gray-600">
           Create your admin account to access the dashboard
         </p>
 
         <form
           onSubmit={submitHandler}
-          className="w-full max-w-md space-y-5 bg-white p-8 rounded-2xl shadow-lg"
+          className="w-full max-w-md rounded-2xl bg-white p-8 shadow-lg space-y-5"
         >
-          <div className="text-center font-semibold text-2xl text-gray-700">
+          <div className="text-center text-2xl font-semibold text-gray-700">
             Admin Sign Up
           </div>
 
-          {/* Full Name */}
-          <input
-            type="text"
-            placeholder="Enter your full name"
-            name="fullName"
-            value={formData.fullName}
-            onChange={changeHandler}
-            className="w-full p-3 border rounded-xl focus:outline-none focus:ring-2 focus:ring-orange-400"
-            required
-          />
+          <div>
+            <label
+              htmlFor="fullName"
+              className="mb-2 block text-sm font-medium text-gray-700"
+            >
+              Full Name <span className="text-red-500">*</span>
+            </label>
 
-          {/* Email */}
-          <input
-            type="email"
-            placeholder="Enter your email"
-            name="email"
-            value={formData.email}
-            onChange={changeHandler}
-            className="w-full p-3 border rounded-xl focus:outline-none focus:ring-2 focus:ring-orange-400"
-            required
-          />
+            <input
+              id="fullName"
+              type="text"
+              name="fullName"
+              placeholder="Enter your full name"
+              value={formData.fullName}
+              onChange={changeHandler}
+              required
+              className="w-full rounded-xl border border-gray-300 p-3 outline-none transition focus:border-orange-500 focus:ring-2 focus:ring-orange-200"
+            />
+          </div>
 
-          {/* Phone Number */}
-          <input
-            type="text"
-            placeholder="Enter your phone number"
-            name="phoneNumber"
-            value={formData.phoneNumber}
-            onChange={changeHandler}
-            className="w-full p-3 border rounded-xl focus:outline-none focus:ring-2 focus:ring-orange-400"
-            required
-          />
+          <div>
+            <label
+              htmlFor="email"
+              className="mb-2 block text-sm font-medium text-gray-700"
+            >
+              Email <span className="text-red-500">*</span>
+            </label>
 
-          {/* Password */}
-          <input
-            type="password"
-            placeholder="Enter your password"
-            name="password"
-            value={formData.password}
-            onChange={changeHandler}
-            className="w-full p-3 border rounded-xl focus:outline-none focus:ring-2 focus:ring-orange-400"
-            required
-          />
+            <input
+              id="email"
+              type="email"
+              name="email"
+              placeholder="Enter your email"
+              value={formData.email}
+              onChange={changeHandler}
+              required
+              className="w-full rounded-xl border border-gray-300 p-3 outline-none transition focus:border-orange-500 focus:ring-2 focus:ring-orange-200"
+            />
+          </div>
 
-          {/* Submit Button */}
+          <div>
+            <label
+              htmlFor="phoneNumber"
+              className="mb-2 block text-sm font-medium text-gray-700"
+            >
+              Phone Number <span className="text-red-500">*</span>
+            </label>
+
+            <input
+              id="phoneNumber"
+              type="tel"
+              name="phoneNumber"
+              placeholder="Enter your phone number"
+              value={formData.phoneNumber}
+              onChange={changeHandler}
+              required
+              className="w-full rounded-xl border border-gray-300 p-3 outline-none transition focus:border-orange-500 focus:ring-2 focus:ring-orange-200"
+            />
+          </div>
+
+          <div>
+            <label
+              htmlFor="password"
+              className="mb-2 block text-sm font-medium text-gray-700"
+            >
+              Password <span className="text-red-500">*</span>
+            </label>
+
+            <div className="relative">
+              <input
+                id="password"
+                type={showPassword ? "text" : "password"}
+                name="password"
+                placeholder="Enter your password"
+                value={formData.password}
+                onChange={changeHandler}
+                required
+                className="w-full rounded-xl border border-gray-300 p-3 pr-12 outline-none transition focus:border-orange-500 focus:ring-2 focus:ring-orange-200"
+              />
+
+              <button
+                type="button"
+                onClick={() => setShowPassword((prev) => !prev)}
+                className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-500 hover:text-orange-600 transition"
+              >
+                {showPassword ? <FiEyeOff size={20} /> : <FiEye size={20} />}
+              </button>
+            </div>
+          </div>
+
           <button
             type="submit"
-            className="w-full p-3 rounded-xl bg-orange-600 text-white font-semibold hover:bg-orange-700 transition"
+            className="w-full rounded-xl bg-orange-600 p-3 font-semibold text-white transition hover:bg-orange-700"
           >
             Sign Up
           </button>
 
-          {/* Login Redirect */}
           <p className="text-center text-sm text-gray-600">
-            Already have an account?{" "}
+            Already have an admin account?{" "}
             <span
-              className="text-orange-600 cursor-pointer hover:underline font-medium"
               onClick={() => navigate("/login")}
+              className="cursor-pointer font-medium text-orange-600 hover:underline"
             >
               Login
             </span>

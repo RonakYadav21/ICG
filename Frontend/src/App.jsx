@@ -20,11 +20,10 @@ const App = () => {
         <Routes>
           <Route path="/" element={<HomePage />} />
           <Route path="/login" element={<Login />} />
-          {/* <Route path="/signup" element={<Signup />} /> */}
+          <Route path="/signup" element={<Signup />} />
           <Route path="/about" element={<About />} />
           <Route path="/contact" element={<Contact />} />
           <Route path="/student-registration" element={<StudentDashboard />} />
-          <Route path="/signup" element={<Signup />} />
           <Route
             path="/admin-dashboard/pending-admins"
             element={<PendingAdmins />}
@@ -38,10 +37,7 @@ const App = () => {
               </ProtectedRoute>
             }
           />
-<Route
-  path="/admin-dashboard/add-course"
-  element={<AddCourse />}
-/>
+          <Route path="/admin-dashboard/add-course" element={<AddCourse />} />
 
           <Route
             path="/admin-dashboard/student-details"

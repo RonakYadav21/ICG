@@ -71,7 +71,6 @@ export const deleteTemplate = async (id) => {
 export const getAllCourses = async () => {
   try {
     const res = await api.get(`/templates/allcourse`);
-    // console.log(res);
     return res.data || [];
   } catch (err) {
     throw new Error(err.response?.data?.message || err.message);

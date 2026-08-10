@@ -5,6 +5,8 @@ import { useNavigate } from "react-router-dom";
 import Navbar from "../components/UI/Navbar";
 import { FaUser, FaSchool } from "react-icons/fa";
 import Footer from "../components/UI/Footer";
+import { useForm } from "react-hook-form";
+
 const StudentDashboard = () => {
   const API_URL = import.meta.env.VITE_BACKEND_URL || "http://localhost:8080";
   const CLOUD_NAME = import.meta.env.VITE_CLOUDINARY_CLOUD_NAME;
@@ -14,22 +16,31 @@ const StudentDashboard = () => {
   const [alreadyRegistered, setAlreadyRegistered] = useState(false);
   const [courses, setCourses] = useState([]);
 
-  const [formData, setFormData] = useState({
-    firstName: "",
-    lastName: "",
-    fatherName: "",
-    emailAddress: "",
-    phoneNo: "",
-    dateOfBirth: "",
-    address: "",
-    enrollmentNo: "",
-    programName: "",
-    rollNo: "",
-    admissionBatch: "",
-    studentPhoto: "",
-    courseId: "",
+  const {
+    register,
+    handleSubmit,
+    setValue,
+    watch,
+    formState: { errors },
+  } = useForm({
+    defaultValues: {
+      firstName: "",
+      lastName: "",
+      fatherName: "",
+      emailAddress: "",
+      phoneNo: "",
+      dateOfBirth: "",
+      address: "",
+      enrollmentNo: "",
+      programName: "",
+      rollNo: "",
+      admissionBatch: "",
+      studentPhoto: "",
+      courseId: "",
+    },
   });
   const navigate = useNavigate();
+
   //Fetch all courses
   useEffect(() => {
     const fetchCourses = async () => {
@@ -43,6 +54,17 @@ const StudentDashboard = () => {
     };
     fetchCourses();
   }, [API_URL]);
+
+  // Register Student photo & programName
+  useEffect(() => {
+    register("studentPhoto", {
+      required: "Student Photo is required",
+    });
+  }, [register]);
+
+  useEffect(() => {
+    register("programName");
+  }, [register]);
 
   // Handle Cloudinary upload
   const handleFileChange = async (e) => {
@@ -62,28 +84,29 @@ const StudentDashboard = () => {
     }
 
     setUploading(true);
+
     //Uploading Image to Cloduinary
     const imgData = new FormData();
     imgData.append("file", file);
     imgData.append("upload_preset", UPLOAD_PRESET);
-   console.log("Cloud Name:", CLOUD_NAME);
-console.log("Upload Preset:", UPLOAD_PRESET);
+
     try {
       const res = await fetch(
         `https://api.cloudinary.com/v1_1/${CLOUD_NAME}/image/upload`,
         {
           method: "POST",
           body: imgData,
-        }
+        },
       );
 
       if (!res.ok) throw new Error("Upload failed");
 
       const data = await res.json();
-      setFormData((prev) => ({
-        ...prev,
-        studentPhoto: data.secure_url,
-      }));
+
+      setValue("studentPhoto", data.secure_url, {
+        shouldValidate: true,
+      });
+
       toast.success("Image uploaded successfully!");
     } catch (err) {
       console.error(err);
@@ -92,50 +115,30 @@ console.log("Upload Preset:", UPLOAD_PRESET);
       setUploading(false);
     }
   };
-  // input change
-  const changeHandler = (e) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
-  };
 
   // Submit registration
-  const submitHandler = async (e) => {
-    e.preventDefault();
-
-    if (!formData.studentPhoto) {
-      toast.error("Please upload a student photo");
-      return;
-    }
-
-    if (!formData.courseId) {
-      toast.error("Please select a program");
-      return;
-    }
-
+  const submitHandler = async (data) => {
     try {
       let formattedDOB = "";
-      if (formData.dateOfBirth) {
-        const dob = new Date(formData.dateOfBirth);
+      if (data.dateOfBirth) {
+        const dob = new Date(data.dateOfBirth);
         formattedDOB = dob.toISOString().split("T")[0];
       }
 
       const submissionData = {
-        firstName: formData.firstName.trim(),
-        lastName: formData.lastName.trim(),
-        fatherName: formData.fatherName.trim(),
-        emailAddress: formData.emailAddress.trim().toLowerCase(),
-        phoneNo: formData.phoneNo.trim(),
+        firstName: data.firstName.trim(),
+        lastName: data.lastName.trim(),
+        fatherName: data.fatherName.trim(),
+        emailAddress: data.emailAddress.trim().toLowerCase(),
+        phoneNo: data.phoneNo.trim(),
         dateOfBirth: formattedDOB,
-        address: formData.address.trim(),
-        enrollmentNo: formData.enrollmentNo.trim(),
-        programName: formData.programName.trim(),
-        rollNo: formData.rollNo.trim(),
-        admissionBatch: formData.admissionBatch.trim(),
-        studentPhoto: formData.studentPhoto,
-        courseId: Number(formData.courseId),
+        address: data.address.trim(),
+        enrollmentNo: data.enrollmentNo.trim(),
+        programName: data.programName.trim(),
+        rollNo: data.rollNo.trim(),
+        admissionBatch: data.admissionBatch.trim(),
+        studentPhoto: data.studentPhoto,
+        courseId: Number(data.courseId),
       };
       const res = await studentRegistration(submissionData);
 
@@ -156,7 +159,7 @@ console.log("Upload Preset:", UPLOAD_PRESET);
 
         if (status === 409) {
           toast.error(
-            "Email, phone, enrollment, or roll number already exists"
+            "Email, phone, enrollment, or roll number already exists",
           );
           return;
         }
@@ -199,19 +202,22 @@ console.log("Upload Preset:", UPLOAD_PRESET);
   return (
     <>
       <Navbar />
-      <div className="bg-gray-50 py-10 px-6 min-h-screen">
+      <div className="">
         <div>
+          <div className="text-center mt-8">
+            <h2 className="text-4xl font-heading text-gray-800">
+              Student ID Registration
+            </h2>
+
+            <p className="mt-2 text-lg text-gray-500 italic">
+              Enter your personal and academic information to register and
+              generate your student ID card.
+            </p>
+          </div>
           <form
-            onSubmit={submitHandler}
+            onSubmit={handleSubmit(submitHandler)}
             className="bg-white p-10 space-y-8 rounded-lg"
           >
-            <h2 className="text-4xl font-semibold text-gray-800">
-              Student Registration
-            </h2>
-            <p className="text-gray-500 text-lg">
-              Enter your details for ID card generation
-            </p>
-
             <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
               {/* Personal Information */}
               <div className="border border-gray-300 rounded-xl p-8 space-y-6">
@@ -225,108 +231,154 @@ console.log("Upload Preset:", UPLOAD_PRESET);
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div>
                     <label className="block text-base font-medium text-gray-700 mb-2">
-                      First Name
+                      First Name <span className="text-red-500">*</span>
                     </label>
+
                     <input
                       type="text"
-                      name="firstName"
-                      required
-                      value={formData.firstName}
-                      onChange={changeHandler}
                       placeholder="John"
                       className="w-full border border-gray-300 rounded-lg px-4 py-3 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none text-lg"
+                      {...register("firstName", {
+                        required: "First Name is required",
+                      })}
                     />
+
+                    {errors.firstName && (
+                      <p className="mt-1 text-sm text-red-500">
+                        {errors.firstName.message}
+                      </p>
+                    )}
                   </div>
+
                   <div>
                     <label className="block text-base font-medium text-gray-700 mb-2">
                       Last Name
                     </label>
+
                     <input
                       type="text"
-                      name="lastName"
-                      required
-                      value={formData.lastName}
-                      onChange={changeHandler}
                       placeholder="Doe"
                       className="w-full border border-gray-300 rounded-lg px-4 py-3 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none text-lg"
+                      {...register("lastName")}
                     />
                   </div>
                 </div>
 
                 <div>
                   <label className="block text-base font-medium text-gray-700 mb-2">
-                    Father's Name
+                    Father's Name <span className="text-red-500">*</span>
                   </label>
+
                   <input
                     type="text"
-                    name="fatherName"
-                    required
-                    value={formData.fatherName}
-                    onChange={changeHandler}
                     placeholder="Joe Doe"
                     className="w-full border border-gray-300 rounded-lg px-4 py-3 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none text-lg"
+                    {...register("fatherName", {
+                      required: "Father's Name is required",
+                    })}
                   />
+
+                  {errors.fatherName && (
+                    <p className="mt-1 text-sm text-red-500">
+                      {errors.fatherName.message}
+                    </p>
+                  )}
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div>
                     <label className="block text-base font-medium text-gray-700 mb-2">
-                      Email Address
+                      Email Address <span className="text-red-500">*</span>
                     </label>
+
                     <input
                       type="email"
-                      name="emailAddress"
-                      required
-                      value={formData.emailAddress}
-                      onChange={changeHandler}
-                      placeholder="DoeJohn@gmail.com"
+                      placeholder="john@gmail.com"
                       className="w-full border border-gray-300 rounded-lg px-4 py-3 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none text-lg"
+                      {...register("emailAddress", {
+                        required: "Email Address is required",
+                        pattern: {
+                          value: /^\S+@\S+\.\S+$/,
+                          message: "Please enter a valid email address",
+                        },
+                      })}
                     />
+
+                    {errors.emailAddress && (
+                      <p className="mt-1 text-sm text-red-500">
+                        {errors.emailAddress.message}
+                      </p>
+                    )}
                   </div>
+
                   <div>
                     <label className="block text-base font-medium text-gray-700 mb-2">
-                      Phone Number
+                      Phone Number <span className="text-red-500">*</span>
                     </label>
+
                     <input
                       type="tel"
-                      name="phoneNo"
-                      required
-                      value={formData.phoneNo}
-                      onChange={changeHandler}
+                      inputMode="numeric"
+                      maxLength={10}
                       placeholder="9123456789"
                       className="w-full border border-gray-300 rounded-lg px-4 py-3 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none text-lg"
+                      {...register("phoneNo", {
+                        required: "Phone Number is required",
+                        pattern: {
+                          value: /^[6-9]\d{9}$/,
+                          message: "Please enter a valid 10-digit phone number",
+                        },
+                      })}
                     />
+
+                    {errors.phoneNo && (
+                      <p className="mt-1 text-sm text-red-500">
+                        {errors.phoneNo.message}
+                      </p>
+                    )}
                   </div>
                 </div>
 
                 <div>
                   <label className="block text-base font-medium text-gray-700 mb-2">
-                    Date of Birth
+                    Date of Birth <span className="text-red-500">*</span>
                   </label>
+
                   <input
                     type="date"
-                    name="dateOfBirth"
-                    required
-                    value={formData.dateOfBirth}
-                    onChange={changeHandler}
                     max={new Date().toISOString().split("T")[0]}
                     className="w-full border border-gray-300 rounded-lg px-4 py-3 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none text-lg"
+                    {...register("dateOfBirth", {
+                      required: "Date of Birth is required",
+                    })}
                   />
+
+                  {errors.dateOfBirth && (
+                    <p className="mt-1 text-sm text-red-500">
+                      {errors.dateOfBirth.message}
+                    </p>
+                  )}
                 </div>
 
                 <div>
                   <label className="block text-base font-medium text-gray-700 mb-2">
-                    Address
+                    Address <span className="text-red-500">*</span>
                   </label>
+
                   <textarea
-                    name="address"
-                    value={formData.address}
-                    required
-                    onChange={changeHandler}
-                    rows="3"
+                    rows={3}
                     placeholder="123 Main Street, City, State, ZIP"
                     className="w-full border border-gray-300 rounded-lg px-4 py-3 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none text-lg resize-none"
+                    {...register("address", {
+                      required: "Address is required",
+                    })}
                   />
+
+                  {errors.address && (
+                    <p className="mt-1 text-sm text-red-500">
+                      {errors.address.message}
+                    </p>
+                  )}
                 </div>
               </div>
 
@@ -339,131 +391,175 @@ console.log("Upload Preset:", UPLOAD_PRESET);
                   </h3>
                 </div>
 
-                <div>
-                  <label className="block text-base font-medium text-gray-700 mb-2">
-                    Enrollment Number
-                  </label>
-                  <input
-                    type="text"
-                    name="enrollmentNo"
-                    required
-                    value={formData.enrollmentNo}
-                    onChange={changeHandler}
-                    placeholder="DE22020XX"
-                    className="w-full border border-gray-300 rounded-lg px-4 py-3 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none text-lg"
-                  />
-                </div>
+                <div className="border border-gray-300 rounded-xl p-8 space-y-6">
+                  <div className="flex items-center mb-4 gap-3">
+                    <FaSchool className="text-3xl text-gray-700" />
+                    <h3 className="text-xl font-semibold">
+                      Academic Information
+                    </h3>
+                  </div>
+                  <div>
+                    <label className="block text-base font-medium text-gray-700 mb-2">
+                      Enrollment Number <span className="text-red-500">*</span>
+                    </label>
 
-                <div>
-                  <label className="block text-base font-medium text-gray-700 mb-2">
-                    Program Name
-                  </label>
-                  <select
-                    name="courseId"
-                    required
-                    value={formData.courseId}
-                    onChange={(e) => {
-                      const selectedId = e.target.value;
-                      const selectedCourse = courses.find(
-                        (c) => c.courseId.toString() === selectedId
-                      );
-                      setFormData((prev) => ({
-                        ...prev,
-                        courseId: selectedId,
-                        programName: selectedCourse?.courseName || "",
-                      }));
-                    }}
-                    className="w-full border border-gray-300 rounded-lg px-4 py-3 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none bg-white text-lg"
-                  >
-                    <option value="">-- Select Program --</option>
-                    {courses.map((course) => (
-                      <option
-                        key={course.courseId}
-                        value={course.courseId.toString()}
-                      >
-                        {course.courseName}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-
-                <div>
-                  <label className="block text-base font-medium text-gray-700 mb-2">
-                    Roll Number
-                  </label>
-                  <input
-                    type="text"
-                    name="rollNo"
-                    required
-                    value={formData.rollNo}
-                    onChange={changeHandler}
-                    placeholder="IC-2K22-01"
-                    className="w-full border border-gray-300 rounded-lg px-4 py-3 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none text-lg"
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-base font-medium text-gray-700 mb-2">
-                    Admission Batch
-                  </label>
-                  <input
-                    type="text"
-                    required
-                    name="admissionBatch"
-                    value={formData.admissionBatch}
-                    onChange={changeHandler}
-                    placeholder="2022-27"
-                    className="w-full border border-gray-300 rounded-lg px-4 py-3 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none text-lg"
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-lg font-medium text-gray-700 mb-2">
-                    Student Photo
-                  </label>
-                  <input
-                    type="file"
-                    accept="image/jpeg,image/png/jpg"
-                    onChange={handleFileChange}
-                    disabled={uploading}
-                    className={`w-full border border-dashed border-gray-400 rounded-lg px-4 py-6 text-center cursor-pointer focus:outline-none ${
-                      uploading ? "opacity-50 cursor-not-allowed" : ""
-                    }`}
-                  />
-                  {uploading && (
-                    <div className="flex justify-center items-center mt-2">
-                      <svg
-                        className="animate-spin h-6 w-6 text-blue-500"
-                        xmlns="http://www.w3.org/2000/svg"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                      >
-                        <circle
-                          className="opacity-25"
-                          cx="12"
-                          cy="12"
-                          r="10"
-                          stroke="currentColor"
-                          strokeWidth="4"
-                        ></circle>
-                        <path
-                          className="opacity-75"
-                          fill="currentColor"
-                          d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"
-                        ></path>
-                      </svg>
-                      <span className="ml-2 text-blue-500 font-medium">
-                        Uploading...
-                      </span>
-                    </div>
-                  )}
-                  {formData.studentPhoto && !uploading && (
-                    <img
-                      src={formData.studentPhoto}
-                      alt="Preview"
-                      className="mt-4 w-36 h-36 object-cover rounded-lg border"
+                    <input
+                      type="text"
+                      placeholder="DE22020XX"
+                      className="w-full border border-gray-300 rounded-lg px-4 py-3 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none text-lg"
+                      {...register("enrollmentNo", {
+                        required: "Enrollment Number is required",
+                        pattern: {
+                          value: /^[A-Z]{2}\d+[A-Z]*$/,
+                          message:
+                            "Enrollment Number must start with 2 letters followed by numbers (e.g., DE22020XX)",
+                        },
+                      })}
                     />
-                  )}
+
+                    {errors.enrollmentNo && (
+                      <p className="mt-1 text-sm text-red-500">
+                        {errors.enrollmentNo.message}
+                      </p>
+                    )}
+                  </div>
+                  <div>
+                    <label className="block text-base font-medium text-gray-700 mb-2">
+                      Program Name <span className="text-red-500">*</span>
+                    </label>
+                    <select
+                      className="w-full border border-gray-300 rounded-lg px-4 py-3 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none bg-white text-lg"
+                      {...register("courseId", {
+                        required: "Please select a program",
+                      })}
+                      onChange={(e) => {
+                        const selectedId = e.target.value;
+                        const selectedCourse = courses.find(
+                          (course) => course.courseId.toString() === selectedId,
+                        );
+                        setValue("courseId", selectedId);
+                        setValue(
+                          "programName",
+                          selectedCourse?.courseName || "",
+                        );
+                      }}
+                    >
+                      <option value="">-- Select Program --</option>
+                      {courses.map((course) => (
+                        <option
+                          key={course.courseId}
+                          value={course.courseId.toString()}
+                        >
+                          {course.courseName}
+                        </option>
+                      ))}
+                    </select>
+                    {errors.courseId && (
+                      <p className="mt-1 text-sm text-red-500">
+                        {errors.courseId.message}
+                      </p>
+                    )}
+                  </div>
+                  <div>
+                    <label className="block text-base font-medium text-gray-700 mb-2">
+                      Roll Number <span className="text-red-500">*</span>
+                    </label>
+
+                    <input
+                      type="text"
+                      placeholder="IC-2K22-01"
+                      className="w-full border border-gray-300 rounded-lg px-4 py-3 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none text-lg"
+                      {...register("rollNo", {
+                        required: "Roll Number is required",
+                        pattern: {
+                          value: /^[A-Za-z]{2,3}-2[Kk]\d{2}-\d+$/,
+                          message: "Roll Number must be like IC-2K22-01",
+                        },
+                      })}
+                    />
+
+                    {errors.rollNo && (
+                      <p className="mt-1 text-sm text-red-500">
+                        {errors.rollNo.message}
+                      </p>
+                    )}
+                  </div>
+                  <div>
+                    <label className="block text-base font-medium text-gray-700 mb-2">
+                      Admission Batch <span className="text-red-500">*</span>
+                    </label>
+
+                    <input
+                      type="text"
+                      placeholder="2022-27"
+                      className="w-full border border-gray-300 rounded-lg px-4 py-3 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none text-lg"
+                      {...register("admissionBatch", {
+                        required: "Admission Batch is required",
+                        pattern: {
+                          value: /^\d{4}-\d{2}$/,
+                          message:
+                            "Admission Batch must be in the format YYYY-YY (e.g., 2022-27)",
+                        },
+                      })}
+                    />
+
+                    {errors.admissionBatch && (
+                      <p className="mt-1 text-sm text-red-500">
+                        {errors.admissionBatch.message}
+                      </p>
+                    )}
+                  </div>
+                  <div>
+                    <label className="block text-lg font-medium text-gray-700 mb-2">
+                      Student Photo <span className="text-red-500">*</span>
+                    </label>
+                    <input
+                      type="file"
+                      accept="image/jpeg,image/png,image/jpg"
+                      onChange={handleFileChange}
+                      disabled={uploading}
+                      className={`w-full border border-dashed border-gray-400 rounded-lg px-4 py-6 text-center cursor-pointer focus:outline-none ${uploading ? "opacity-50 cursor-not-allowed" : ""}`}
+                    />
+                    {errors.studentPhoto && (
+                      <p className="mt-1 text-sm text-red-500">
+                        {errors.studentPhoto.message}
+                      </p>
+                    )}
+                    {uploading && (
+                      <div className="flex justify-center items-center mt-2">
+                        <svg
+                          className="animate-spin h-6 w-6 text-blue-500"
+                          xmlns="http://www.w3.org/2000/svg"
+                          fill="none"
+                          viewBox="0 0 24 24"
+                        >
+                          <circle
+                            className="opacity-25"
+                            cx="12"
+                            cy="12"
+                            r="10"
+                            stroke="currentColor"
+                            strokeWidth="4"
+                          />
+                          <path
+                            className="opacity-75"
+                            fill="currentColor"
+                            d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"
+                          />
+                        </svg>
+                        <span className="ml-2 text-blue-500 font-medium">
+                          Uploading...
+                        </span>
+                      </div>
+                    )}
+                    {watch("studentPhoto") && !uploading && (
+                      <img
+                        src={watch("studentPhoto")}
+                        alt="Preview"
+                        className="mt-4 w-36 h-36 object-cover rounded-lg border"
+                      />
+                    )}
+                  </div>
                 </div>
               </div>
             </div>
@@ -471,7 +567,7 @@ console.log("Upload Preset:", UPLOAD_PRESET);
             <button
               type="submit"
               disabled={uploading}
-              className={`w-full bg-primary text-white py-4 rounded-lg hover:bg-[#e54f19] transition duration-200 font-semibold text-lg cursor-pointer ${
+              className={`w-1/2 translate-x-1/2 bg-primary text-white py-4 rounded-lg hover:bg-[#B84B22]  transition duration-200 font-semibold text-lg cursor-pointer ${
                 uploading ? "opacity-50 cursor-not-allowed" : ""
               }`}
             >
