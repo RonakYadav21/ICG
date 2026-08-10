@@ -29,13 +29,11 @@ export const AuthProvider = ({ children }) => {
     }
   }, [token]);
 
-  //login
   const login = (jwtToken) => {
     localStorage.setItem("token", jwtToken);
     setToken(jwtToken);
   };
 
-  //logout
   const logout = () => {
     localStorage.removeItem("token");
     setToken(null);

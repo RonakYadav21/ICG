@@ -1,80 +1,63 @@
-import React from "react";
 import { useNavigate } from "react-router-dom";
+import { HiOutlineArrowUpRight, HiOutlineMapPin } from "react-icons/hi2";
+import { HiOutlineMail } from "react-icons/hi";
 
 const Footer = () => {
   const navigate = useNavigate();
+
+  const links = [
+    { name: "Dashboard", path: "/" },
+    { name: "About", path: "/about" },
+    { name: "Contact", path: "/contact" },
+    { name: "Admin", path: "/admin-dashboard" },
+  ];
+
   return (
-    <div>
-      {" "}
-      <footer className="w-full bg-primary text-white py-12 px-20 mt-20 font-body">
-        <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-10">
-          <div>
-            <h2 className="text-3xl font-heading font-bold">IIPS-ICG</h2>
-            <p className="mt-4 text-white/80 leading-relaxed max-w-sm text-[18px]">
-              A smarter, secure platform to create, manage & export student ID
-              cards.
-            </p>
-          </div>
-          {/* Links */}
-          <div>
-            <h3 className="text-[20px] font-heading font-semibold">
-              Quick Links
-            </h3>
-            <ul className="mt-4 space-y-2 text-[18px] text-white/80 cursor-pointer">
-              <li
-                className="hover:text-white transition"
-                onClick={() => {
-                  navigate("/");
-                }}
-              >
-                Dashboard
-              </li>
-              <li
-                className="hover:text-white transition"
-                onClick={() => {
-                  navigate("/about");
-                }}
-              >
-                About Us
-              </li>
-              <li
-                className="hover:text-white transition"
-                onClick={() => {
-                  navigate("/contact");
-                }}
-              >
-                Contact Us
-              </li>
-              <li
-                className="hover:text-white transition"
-                onClick={() => {
-                  navigate("/admin-dashboard");
-                }}
-              >
-                Admin Login
-              </li>
-            </ul>
+    <footer className="bg-[#b74225] text-[#F8F2EC]">
+      <div className="mx-auto max-w-6xl px-6 py-20">
+        <div className="text-center">
+          <h2 className="font-heading text-5xl">
+            IIPS<span className="text-[#C79745]"> · </span>ICG
+          </h2>
+
+          <p className="mx-auto mt-5 max-w-xl text-lg text-[#D6C8BE]">
+            A smarter platform to create, manage and export student ID cards
+            with speed, accuracy and security.
+          </p>
+        </div>
+
+        <div className="mt-16 flex flex-wrap justify-center gap-10">
+          {links.map((link) => (
+            <button
+              key={link.name}
+              onClick={() => navigate(link.path)}
+              className="group flex items-center gap-1 text-lg transition hover:text-[#C79745] cursor-pointer"
+            >
+              {link.name}
+
+              <HiOutlineArrowUpRight className="transition group-hover:translate-x-1 group-hover:-translate-y-1" />
+            </button>
+          ))}
+        </div>
+
+        <div className="flex flex-col items-center gap-5 text-[#D6C8BE]">
+          <div className="flex items-center mt-2 gap-3">
+            <HiOutlineMapPin className="text-[#C79745]" />
+            <span>Indore, Madhya Pradesh</span>
           </div>
 
-          {/* Contact */}
-          <div>
-            <h3 className="text-xl font-heading font-semibold">Contact</h3>
-            <p className="mt-4 text-white/80 text-[18px]">
-              Indore, Madhya Pradesh
-            </p>
-            <p className="text-white/80 text-[18px]">
-              Email: khansarah0716@gmail.com
-            </p>
+          <div className="flex items-center gap-3">
+            <HiOutlineMail className="text-[#C79745]" />
+            <span>khansarah0716@gmail.com</span>
           </div>
         </div>
 
-        <hr className="border-white/30 my-10" />
-
-        <p className="text-center text-white/70">
-          © {new Date().getFullYear()} IIPS-ICG. All Rights Reserved.
-        </p>
-      </footer>
-    </div>
+        <div className="mt-16 border-t border-white/10 pt-8 text-center text-sm text-[#BBAEA4]">
+          © {new Date().getFullYear()} IIPS-ICG · Designed & Developed by Saara
+          & Ronak
+        </div>
+      </div>
+    </footer>
   );
 };
 

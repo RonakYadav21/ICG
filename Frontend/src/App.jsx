@@ -24,11 +24,11 @@ const App = () => {
           <Route path="/about" element={<About />} />
           <Route path="/contact" element={<Contact />} />
           <Route path="/student-registration" element={<StudentDashboard />} />
- <Route path="/signup" element={<Signup />} />
-<Route
-  path="/admin-dashboard/pending-admins"
-  element={<PendingAdmins />}
-/>
+          <Route path="/signup" element={<Signup />} />
+          <Route
+            path="/admin-dashboard/pending-admins"
+            element={<PendingAdmins />}
+          />
 
           <Route
             path="/admin-dashboard"
