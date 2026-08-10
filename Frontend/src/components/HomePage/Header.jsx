@@ -13,7 +13,7 @@ const Header = () => {
         <div className="absolute -top-30 -left-24 h-72 w-72 rounded-full bg-[#F9C784]/40 blur-3xl" />
         <div className="absolute -bottom-16 right-0 h-80 w-80 rounded-full bg-[#DD6031]/15 blur-3xl" />
         <div className="relative mx-auto flex min-h-[90vh] max-w-7xl flex-col items-center justify-center gap-12 px-6 py-20 md:flex-row md:gap-10">
-          <div className="flex w-full flex-col gap-6 md:w-1/2">
+          <div className="flex w-full flex-col gap-6 md:w-3/5">
             {/* <div className="inline-flex w-fit items-center gap-2 rounded-full border border-[#DD6031]/40 bg-white/70 px-4 py-1 shadow-sm">
               <span className="h-2 w-2 rounded-full bg-[#DD6031]" />
               <p className="text-sm font-semibold tracking-wide text-[#7A3A18]">
@@ -77,7 +77,7 @@ const Header = () => {
             </div>
           </div>
 
-          <div className="relative flex w-full justify-center md:w-1/2">
+          <div className="relative flex w-full justify-center md:w-2/5">
             <div className="absolute -top-6 left-10 h-24 w-24 rounded-2xl bg-[#FFE3C7] shadow-lg" />
             <div className="absolute -bottom-6 right-12 h-20 w-20 rounded-full border border-[#DD6031]/40 bg-white/70" />
             <img
