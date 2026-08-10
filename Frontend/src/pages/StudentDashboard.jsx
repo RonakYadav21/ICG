@@ -21,7 +21,7 @@ const StudentDashboard = () => {
     handleSubmit,
     setValue,
     watch,
-    formState: { errors },
+    formState: { errors, isSubmitting },
   } = useForm({
     defaultValues: {
       firstName: "",
@@ -383,6 +383,7 @@ const StudentDashboard = () => {
               </div>
 
               {/* Academic Information */}
+
               <div className="border border-gray-300 rounded-xl p-8 space-y-6">
                 <div className="flex items-center mb-4 gap-3">
                   <FaSchool className="text-3xl text-gray-700" />
@@ -390,183 +391,172 @@ const StudentDashboard = () => {
                     Academic Information
                   </h3>
                 </div>
+                <div>
+                  <label className="block text-base font-medium text-gray-700 mb-2">
+                    Enrollment Number <span className="text-red-500">*</span>
+                  </label>
 
-                <div className="border border-gray-300 rounded-xl p-8 space-y-6">
-                  <div className="flex items-center mb-4 gap-3">
-                    <FaSchool className="text-3xl text-gray-700" />
-                    <h3 className="text-xl font-semibold">
-                      Academic Information
-                    </h3>
-                  </div>
-                  <div>
-                    <label className="block text-base font-medium text-gray-700 mb-2">
-                      Enrollment Number <span className="text-red-500">*</span>
-                    </label>
+                  <input
+                    type="text"
+                    placeholder="DE22020XX"
+                    className="w-full border border-gray-300 rounded-lg px-4 py-3 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none text-lg"
+                    {...register("enrollmentNo", {
+                      required: "Enrollment Number is required",
+                      pattern: {
+                        value: /^[A-Z]{2}\d+[A-Z]*$/,
+                        message:
+                          "Enrollment Number must start with 2 letters followed by numbers (e.g., DE22020XX)",
+                      },
+                    })}
+                  />
 
-                    <input
-                      type="text"
-                      placeholder="DE22020XX"
-                      className="w-full border border-gray-300 rounded-lg px-4 py-3 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none text-lg"
-                      {...register("enrollmentNo", {
-                        required: "Enrollment Number is required",
-                        pattern: {
-                          value: /^[A-Z]{2}\d+[A-Z]*$/,
-                          message:
-                            "Enrollment Number must start with 2 letters followed by numbers (e.g., DE22020XX)",
-                        },
-                      })}
+                  {errors.enrollmentNo && (
+                    <p className="mt-1 text-sm text-red-500">
+                      {errors.enrollmentNo.message}
+                    </p>
+                  )}
+                </div>
+                <div>
+                  <label className="block text-base font-medium text-gray-700 mb-2">
+                    Program Name <span className="text-red-500">*</span>
+                  </label>
+                  <select
+                    className="w-full border border-gray-300 rounded-lg px-4 py-3 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none bg-white text-lg"
+                    {...register("courseId", {
+                      required: "Please select a program",
+                    })}
+                    onChange={(e) => {
+                      const selectedId = e.target.value;
+                      const selectedCourse = courses.find(
+                        (course) => course.courseId.toString() === selectedId,
+                      );
+                      setValue("courseId", selectedId);
+                      setValue("programName", selectedCourse?.courseName || "");
+                    }}
+                  >
+                    <option value="">-- Select Program --</option>
+                    {courses.map((course) => (
+                      <option
+                        key={course.courseId}
+                        value={course.courseId.toString()}
+                      >
+                        {course.courseName}
+                      </option>
+                    ))}
+                  </select>
+                  {errors.courseId && (
+                    <p className="mt-1 text-sm text-red-500">
+                      {errors.courseId.message}
+                    </p>
+                  )}
+                </div>
+                <div>
+                  <label className="block text-base font-medium text-gray-700 mb-2">
+                    Roll Number <span className="text-red-500">*</span>
+                  </label>
+
+                  <input
+                    type="text"
+                    placeholder="IC-2K22-01"
+                    className="w-full border border-gray-300 rounded-lg px-4 py-3 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none text-lg"
+                    {...register("rollNo", {
+                      required: "Roll Number is required",
+                      pattern: {
+                        value: /^[A-Za-z]{2,3}-2[Kk]\d{2}-\d+$/,
+                        message: "Roll Number must be like IC-2K22-01",
+                      },
+                    })}
+                  />
+
+                  {errors.rollNo && (
+                    <p className="mt-1 text-sm text-red-500">
+                      {errors.rollNo.message}
+                    </p>
+                  )}
+                </div>
+                <div>
+                  <label className="block text-base font-medium text-gray-700 mb-2">
+                    Admission Batch <span className="text-red-500">*</span>
+                  </label>
+
+                  <input
+                    type="text"
+                    placeholder="2022-27"
+                    className="w-full border border-gray-300 rounded-lg px-4 py-3 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none text-lg"
+                    {...register("admissionBatch", {
+                      required: "Admission Batch is required",
+                      pattern: {
+                        value: /^\d{4}-\d{2}$/,
+                        message:
+                          "Admission Batch must be in the format YYYY-YY (e.g., 2022-27)",
+                      },
+                    })}
+                  />
+
+                  {errors.admissionBatch && (
+                    <p className="mt-1 text-sm text-red-500">
+                      {errors.admissionBatch.message}
+                    </p>
+                  )}
+                </div>
+                <div>
+                  <label className="block text-lg font-medium text-gray-700 mb-2">
+                    Student Photo <span className="text-red-500">*</span>
+                  </label>
+                  <input
+                    type="file"
+                    accept="image/jpeg,image/png,image/jpg"
+                    onChange={handleFileChange}
+                    disabled={uploading}
+                    className={`w-full border border-dashed border-gray-400 rounded-lg px-4 py-6 text-center cursor-pointer focus:outline-none ${uploading ? "opacity-50 cursor-not-allowed" : ""}`}
+                  />
+                  {errors.studentPhoto && (
+                    <p className="mt-1 text-sm text-red-500">
+                      {errors.studentPhoto.message}
+                    </p>
+                  )}
+                  {uploading && (
+                    <div className="flex justify-center items-center mt-2">
+                      <svg
+                        className="animate-spin h-6 w-6 text-blue-500"
+                        xmlns="http://www.w3.org/2000/svg"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                      >
+                        <circle
+                          className="opacity-25"
+                          cx="12"
+                          cy="12"
+                          r="10"
+                          stroke="currentColor"
+                          strokeWidth="4"
+                        />
+                        <path
+                          className="opacity-75"
+                          fill="currentColor"
+                          d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"
+                        />
+                      </svg>
+                      <span className="ml-2 text-blue-500 font-medium">
+                        Uploading...
+                      </span>
+                    </div>
+                  )}
+                  {watch("studentPhoto") && !uploading && (
+                    <img
+                      src={watch("studentPhoto")}
+                      alt="Preview"
+                      className="mt-4 w-36 h-36 object-cover rounded-lg border"
                     />
-
-                    {errors.enrollmentNo && (
-                      <p className="mt-1 text-sm text-red-500">
-                        {errors.enrollmentNo.message}
-                      </p>
-                    )}
-                  </div>
-                  <div>
-                    <label className="block text-base font-medium text-gray-700 mb-2">
-                      Program Name <span className="text-red-500">*</span>
-                    </label>
-                    <select
-                      className="w-full border border-gray-300 rounded-lg px-4 py-3 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none bg-white text-lg"
-                      {...register("courseId", {
-                        required: "Please select a program",
-                      })}
-                      onChange={(e) => {
-                        const selectedId = e.target.value;
-                        const selectedCourse = courses.find(
-                          (course) => course.courseId.toString() === selectedId,
-                        );
-                        setValue("courseId", selectedId);
-                        setValue(
-                          "programName",
-                          selectedCourse?.courseName || "",
-                        );
-                      }}
-                    >
-                      <option value="">-- Select Program --</option>
-                      {courses.map((course) => (
-                        <option
-                          key={course.courseId}
-                          value={course.courseId.toString()}
-                        >
-                          {course.courseName}
-                        </option>
-                      ))}
-                    </select>
-                    {errors.courseId && (
-                      <p className="mt-1 text-sm text-red-500">
-                        {errors.courseId.message}
-                      </p>
-                    )}
-                  </div>
-                  <div>
-                    <label className="block text-base font-medium text-gray-700 mb-2">
-                      Roll Number <span className="text-red-500">*</span>
-                    </label>
-
-                    <input
-                      type="text"
-                      placeholder="IC-2K22-01"
-                      className="w-full border border-gray-300 rounded-lg px-4 py-3 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none text-lg"
-                      {...register("rollNo", {
-                        required: "Roll Number is required",
-                        pattern: {
-                          value: /^[A-Za-z]{2,3}-2[Kk]\d{2}-\d+$/,
-                          message: "Roll Number must be like IC-2K22-01",
-                        },
-                      })}
-                    />
-
-                    {errors.rollNo && (
-                      <p className="mt-1 text-sm text-red-500">
-                        {errors.rollNo.message}
-                      </p>
-                    )}
-                  </div>
-                  <div>
-                    <label className="block text-base font-medium text-gray-700 mb-2">
-                      Admission Batch <span className="text-red-500">*</span>
-                    </label>
-
-                    <input
-                      type="text"
-                      placeholder="2022-27"
-                      className="w-full border border-gray-300 rounded-lg px-4 py-3 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none text-lg"
-                      {...register("admissionBatch", {
-                        required: "Admission Batch is required",
-                        pattern: {
-                          value: /^\d{4}-\d{2}$/,
-                          message:
-                            "Admission Batch must be in the format YYYY-YY (e.g., 2022-27)",
-                        },
-                      })}
-                    />
-
-                    {errors.admissionBatch && (
-                      <p className="mt-1 text-sm text-red-500">
-                        {errors.admissionBatch.message}
-                      </p>
-                    )}
-                  </div>
-                  <div>
-                    <label className="block text-lg font-medium text-gray-700 mb-2">
-                      Student Photo <span className="text-red-500">*</span>
-                    </label>
-                    <input
-                      type="file"
-                      accept="image/jpeg,image/png,image/jpg"
-                      onChange={handleFileChange}
-                      disabled={uploading}
-                      className={`w-full border border-dashed border-gray-400 rounded-lg px-4 py-6 text-center cursor-pointer focus:outline-none ${uploading ? "opacity-50 cursor-not-allowed" : ""}`}
-                    />
-                    {errors.studentPhoto && (
-                      <p className="mt-1 text-sm text-red-500">
-                        {errors.studentPhoto.message}
-                      </p>
-                    )}
-                    {uploading && (
-                      <div className="flex justify-center items-center mt-2">
-                        <svg
-                          className="animate-spin h-6 w-6 text-blue-500"
-                          xmlns="http://www.w3.org/2000/svg"
-                          fill="none"
-                          viewBox="0 0 24 24"
-                        >
-                          <circle
-                            className="opacity-25"
-                            cx="12"
-                            cy="12"
-                            r="10"
-                            stroke="currentColor"
-                            strokeWidth="4"
-                          />
-                          <path
-                            className="opacity-75"
-                            fill="currentColor"
-                            d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"
-                          />
-                        </svg>
-                        <span className="ml-2 text-blue-500 font-medium">
-                          Uploading...
-                        </span>
-                      </div>
-                    )}
-                    {watch("studentPhoto") && !uploading && (
-                      <img
-                        src={watch("studentPhoto")}
-                        alt="Preview"
-                        className="mt-4 w-36 h-36 object-cover rounded-lg border"
-                      />
-                    )}
-                  </div>
+                  )}
                 </div>
               </div>
             </div>
 
             <button
               type="submit"
-              disabled={uploading}
+              disabled={uploading || isSubmitting}
+              value={isSubmitting ? "Submitting" : "Submit Registration"}
               className={`w-1/2 translate-x-1/2 bg-primary text-white py-4 rounded-lg hover:bg-[#B84B22]  transition duration-200 font-semibold text-lg cursor-pointer ${
                 uploading ? "opacity-50 cursor-not-allowed" : ""
               }`}

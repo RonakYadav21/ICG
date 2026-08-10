@@ -8,9 +8,18 @@ const Navbar = () => {
 
   const navItems = [
     { id: "dashboard", label: "Dashboard", path: "/" },
+    {
+      id: "adminDashboard",
+      label: "Admin Dashboard",
+      path: "/admin-dashboard",
+    },
     { id: "about", label: "About Us", path: "/about" },
     { id: "contact", label: "Contact Us", path: "/contact" },
   ];
+
+  const filteredNavItems = navItems.filter(
+    (item) => item.id !== "adminDashboard" || admin?.user,
+  );
 
   function pathMatch(path) {
     return matchPath({ path }, location.pathname);
@@ -29,22 +38,21 @@ const Navbar = () => {
         </h1>
 
         <ul className="flex items-center gap-10 text-[16px]">
-          {navItems.map((item) => (
-            <li
-              key={item.id}
-              className={`cursor-pointer transition px-3 py-1 rounded-md
-                ${
-                  pathMatch(item?.path)
+          <ul className="flex items-center gap-10 text-[16px]">
+            {filteredNavItems.map((item) => (
+              <li
+                key={item.id}
+                className={`cursor-pointer transition px-3 py-1 rounded-md ${
+                  pathMatch(item.path)
                     ? "bg-gray-200 text-black shadow-md"
                     : "text-text hover:text-primary"
                 }`}
-              onClick={() => {
-                navigate(item.path);
-              }}
-            >
-              {item.label}
-            </li>
-          ))}
+                onClick={() => navigate(item.path)}
+              >
+                {item.label}
+              </li>
+            ))}
+          </ul>
         </ul>
 
         {admin?.user ? (

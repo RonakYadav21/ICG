@@ -7,8 +7,13 @@ const AuthContext = createContext();
 export const useAuth = () => useContext(AuthContext);
 
 export const AuthProvider = ({ children }) => {
-  const [user, setUser] = useState(null);
-  const [token, setToken] = useState(localStorage.getItem("token") || null);
+  const [token, setToken] = useState(localStorage.getItem("token"));
+
+  const [user, setUser] = useState(() => {
+    const storedUser = localStorage.getItem("user");
+    return storedUser ? JSON.parse(storedUser) : null;
+  });
+
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -31,11 +36,17 @@ export const AuthProvider = ({ children }) => {
 
   const login = (jwtToken) => {
     localStorage.setItem("token", jwtToken);
+
+    const decoded = jwtDecode(jwtToken);
+    localStorage.setItem("user", JSON.stringify(decoded));
+
     setToken(jwtToken);
+    setUser(decoded);
   };
 
   const logout = () => {
     localStorage.removeItem("token");
+    localStorage.removeItem("user");
     setToken(null);
     setUser(null);
     navigate("/login");

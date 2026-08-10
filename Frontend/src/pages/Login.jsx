@@ -26,10 +26,11 @@ export default function Login() {
         username: formData.email,
         password: formData.password,
       });
-      console.log(res);
+      // console.log(res);
 
       const data = res.data;
       login(data.token);
+     
       toast.success("Login successfully!");
       navigate("/admin-dashboard");
     } catch (err) {
@@ -122,7 +123,7 @@ export default function Login() {
           </button>
 
           <p className="text-center text-sm text-gray-600">
-            Don&apos;t have an admin account?{" "}
+            Don't have an admin account?
             <span
               className="cursor-pointer font-medium text-orange-600 hover:underline"
               onClick={() => navigate("/signup")}

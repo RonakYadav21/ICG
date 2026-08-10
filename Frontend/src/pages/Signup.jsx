@@ -32,9 +32,12 @@ const Signup = () => {
     e.preventDefault();
 
     try {
+      console.log(formData);
       const res = await axios.post(`${API_URL}/Admin/signup`, formData);
 
-      console.log(res);
+      // console.log(res.data);
+      if (res.data.status == "PENDING")
+        toast.success("Wait till approved by super admin");
 
       toast.success("Account created successfully!");
 

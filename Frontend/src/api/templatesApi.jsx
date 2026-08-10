@@ -97,3 +97,16 @@ export const getStudentsByCourse = async (courseId) => {
     throw new Error(msg);
   }
 };
+
+export const getDashboardStats = async () => {
+  try {
+    const res = await api.get("/Admin/stats");
+    return res.data || [];
+  } catch (error) {
+    const msg =
+      err.response?.data?.message ||
+      err.message ||
+      "Failed to fetch dashboard stats";
+    throw new Error(msg);
+  }
+};
