@@ -1,7 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import api from "../utils/axios";
-import Navbar from "../components/UI/Navbar";
 
 const AddCourse = () => {
   const navigate = useNavigate();
@@ -33,7 +32,7 @@ const AddCourse = () => {
           headers: {
             Authorization: `Bearer ${token}`,
           },
-        }
+        },
       );
 
       console.log("Course added:", response.data);
@@ -44,15 +43,10 @@ const AddCourse = () => {
       setCourseId("");
 
       navigate("/admin-dashboard");
-
     } catch (error) {
       console.error("Failed to add course:", error);
 
-      alert(
-        error.response?.data?.message ||
-        "Failed to add course"
-      );
-
+      alert(error.response?.data?.message || "Failed to add course");
     } finally {
       setLoading(false);
     }
@@ -60,14 +54,9 @@ const AddCourse = () => {
 
   return (
     <>
-      <Navbar />
-
       <div className="min-h-screen bg-slate-50 px-6 py-10">
-
         <div className="mx-auto max-w-xl">
-
           <div className="rounded-3xl bg-white p-8 shadow-lg">
-
             <h1 className="text-3xl font-bold text-slate-900">
               Add New Course
             </h1>
@@ -76,11 +65,7 @@ const AddCourse = () => {
               Add a course that students can select during registration.
             </p>
 
-            <form
-              onSubmit={handleSubmit}
-              className="mt-8 space-y-6"
-            >
-
+            <form onSubmit={handleSubmit} className="mt-8 space-y-6">
               {/* Course Name */}
               <div>
                 <label className="mb-2 block text-sm font-semibold text-slate-700">
@@ -90,9 +75,7 @@ const AddCourse = () => {
                 <input
                   type="text"
                   value={courseName}
-                  onChange={(e) =>
-                    setCourseName(e.target.value)
-                  }
+                  onChange={(e) => setCourseName(e.target.value)}
                   placeholder="B.Tech Information Technology"
                   className="w-full rounded-xl border border-slate-200 px-4 py-3 outline-none focus:border-slate-900"
                 />
@@ -107,9 +90,7 @@ const AddCourse = () => {
                 <input
                   type="text"
                   value={courseId}
-                  onChange={(e) =>
-                    setCourseId(e.target.value)
-                  }
+                  onChange={(e) => setCourseId(e.target.value)}
                   placeholder="BTECH-IT"
                   className="w-full rounded-xl border border-slate-200 px-4 py-3 uppercase outline-none focus:border-slate-900"
                 />
@@ -117,12 +98,9 @@ const AddCourse = () => {
 
               {/* Buttons */}
               <div className="flex gap-4">
-
                 <button
                   type="button"
-                  onClick={() =>
-                    navigate("/admin-dashboard")
-                  }
+                  onClick={() => navigate("/admin-dashboard")}
                   className="flex-1 rounded-xl border border-slate-200 px-5 py-3 font-semibold text-slate-700 hover:bg-slate-50"
                 >
                   Cancel
@@ -135,15 +113,10 @@ const AddCourse = () => {
                 >
                   {loading ? "Adding..." : "Add Course"}
                 </button>
-
               </div>
-
             </form>
-
           </div>
-
         </div>
-
       </div>
     </>
   );

@@ -1,32 +1,21 @@
-import React from "react";
-import { useState } from "react";
-import IdCardEditor from "../components/IdCardEditor/IdCardEditor";
-import TemplateList from "../components/IdCardEditor/TemplateList";
-export default function EditorPage() {
-  const [selectedTemplate, setSelectedTemplate] = useState(null);
-  return (
-    <div className="">
-      <div className="w-full mb-10">
-        <TemplateList
-          onSelect={(temp) => {
-            const parsedElements = JSON.parse(temp.elementsJson);
-            const parsedMeta = temp.meta ? JSON.parse(temp.meta) : {};
+import { useLocation } from "react-router-dom";
 
-            setSelectedTemplate({
-              name: temp.name,
-              width: temp.width,
-              height: temp.height,
-              backgroundColor: temp.backgroundColor,
-              borderColor: temp.borderColor,
-              borderWidth: temp.borderWidth,
-              elements: parsedElements,
-              meta: parsedMeta,
-              id: temp.id,
-            });
-          }}
-        />
-      </div>
-      <IdCardEditor initialTemplate={selectedTemplate} />
-    </div>
+import IdCardEditor from "../components/IdCardEditor/IdCardEditor";
+
+export default function EditorPage() {
+  const { state } = useLocation();
+
+  const initialTemplate = state?.initialTemplate
+    ? {
+        ...state.initialTemplate,
+        elements: JSON.parse(state.initialTemplate.elementsJson || "[]"),
+        meta: JSON.parse(state.initialTemplate.meta || "{}"),
+      }
+    : null;
+
+  return (
+    <main className="mx-auto max-w-[1500px] px-6 py-8 md:px-10">
+      <IdCardEditor initialTemplate={initialTemplate} />
+    </main>
   );
 }

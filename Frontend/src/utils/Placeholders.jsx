@@ -108,7 +108,7 @@ export const mergeTemplateWithData = (template, studentData = {}) => {
             .split(".")
             .reduce((o, k) => (o ? o[k] : undefined), studentData);
           return val != null ? String(val) : "";
-        }
+        },
       );
       // set placeholder color if left empty
       if (!e.props.text) e.props.fill = PLACEHOLDER_COLOR;

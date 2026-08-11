@@ -2,7 +2,6 @@ import api from "../utils/axios";
 
 // TEMPLATE APIS
 export const saveTemplate = async (template) => {
-  console.log("saving template....");
   console.log(template);
   const payload = {
     name: template.name,
@@ -16,7 +15,7 @@ export const saveTemplate = async (template) => {
   };
 
   const res = await api.post(`/templates/save`, payload);
-  console.log(res.data);
+  // console.log(res.data);
   return res.data;
 };
 
@@ -24,11 +23,9 @@ export const getAllTemplates = async () => {
   try {
     const res = await api.get(`/templates/getalltemplates`);
     return res.data || [];
-  } catch (error) {
+  } catch (err) {
     const msg =
-      error.response?.data?.message ||
-      error.message ||
-      "Failed to fetch templates";
+      err.response?.data?.message || err.message || "Failed to fetch templates";
     throw new Error(msg);
   }
 };
@@ -82,7 +79,7 @@ export const studentRegistration = async (submissionData) => {
   try {
     const res = await api.post(`/student/studentRegistration`, submissionData);
     return res || [];
-  } catch (error) {
+  } catch (err) {
     throw new Error(err.response?.data?.message || err.message);
   }
 };
@@ -90,6 +87,7 @@ export const studentRegistration = async (submissionData) => {
 export const getStudentsByCourse = async (courseId) => {
   try {
     const res = await api.get(`/student/by-course/${courseId}`);
+    // console.log(res);
     return res.data || [];
   } catch (err) {
     const msg =
@@ -102,11 +100,31 @@ export const getDashboardStats = async () => {
   try {
     const res = await api.get("/Admin/stats");
     return res.data || [];
-  } catch (error) {
+  } catch (err) {
     const msg =
       err.response?.data?.message ||
       err.message ||
       "Failed to fetch dashboard stats";
+    throw new Error(msg);
+  }
+};
+
+export const updateStudentStatus = async (studendId) => {
+  try {
+    const res = await api.post("");
+    return res.data || [];
+  } catch (err) {
+    const msg = err.response?.data?.message;
+    throw new Error(msg);
+  }
+};
+
+export const verifyStudent = async (studendId) => {
+  try {
+    const res = await api.post("");
+    return res.data;
+  } catch (error) {
+    const msg = err.response?.data?.message;
     throw new Error(msg);
   }
 };

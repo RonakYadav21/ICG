@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import PlaceholderSelector from "./PlaceholderSelector";
 import { FiFilePlus, FiTrash2 } from "react-icons/fi";
 import { MdLineStyle, MdRectangle, MdImage } from "react-icons/md";

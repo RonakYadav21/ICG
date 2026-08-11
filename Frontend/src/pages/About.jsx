@@ -1,11 +1,6 @@
-import React from "react";
-import Navbar from "../components/UI/Navbar";
-import Footer from "../components/UI/Footer";
-
 const About = () => {
   return (
     <div>
-      <Navbar />
       <section className="w-full px-20 py-28 text-text">
         <div className="max-w-4xl mx-auto text-center">
           <h1 className="text-6xl font-heading font-bold text-primary leading-tight">
@@ -40,7 +35,6 @@ const About = () => {
           </p>
         </div>
       </section>
-      <Footer />
     </div>
   );
 };

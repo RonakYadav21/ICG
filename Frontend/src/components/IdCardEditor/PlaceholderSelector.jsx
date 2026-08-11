@@ -6,18 +6,26 @@ const PlaceholderSelector = ({ addImage, addText }) => {
   useEffect(() => {
     const fetchPlaceholders = async () => {
       try {
-        const students = await getStudentsByCourse(1);
+        const students = await getStudentsByCourse("92011"); // any course to get all fields
         if (!students || students.length === 0) return;
 
-        const student = students[0]; // first student as schema example
+        const student = students[0];
 
-        const fields = Object.keys(student).map((key) => ({
-          key,
-          label: key
-            .replace(/([A-Z])/g, " $1")
-            .replace(/^./, (str) => str.toUpperCase()),
-          type: key.toLowerCase().includes("photo") ? "image" : "text",
-        }));
+        const fields = Object.keys(student)
+          .filter((key) => key !== "firstName" && key !== "lastName")
+          .map((key) => ({
+            key,
+            label: key
+              .replace(/([A-Z])/g, " $1")
+              .replace(/^./, (str) => str.toUpperCase()),
+            type: key.toLowerCase().includes("photo") ? "image" : "text",
+          }));
+
+        fields.unshift({
+          key: "fullName",
+          label: "Full Name",
+          type: "text",
+        });
 
         setPlaceholders(fields);
       } catch (err) {

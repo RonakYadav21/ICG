@@ -2,7 +2,6 @@ import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import { getAllCourses, studentRegistration } from "../api/templatesApi";
 import { useNavigate } from "react-router-dom";
-import Navbar from "../components/UI/Navbar";
 import { FaUser, FaSchool } from "react-icons/fa";
 import Footer from "../components/UI/Footer";
 import { useForm } from "react-hook-form";
@@ -13,7 +12,6 @@ const StudentDashboard = () => {
   const UPLOAD_PRESET = import.meta.env.VITE_CLOUDINARY_UPLOAD_PRESET;
 
   const [uploading, setUploading] = useState(false);
-  const [alreadyRegistered, setAlreadyRegistered] = useState(false);
   const [courses, setCourses] = useState([]);
 
   const {
@@ -136,72 +134,27 @@ const StudentDashboard = () => {
         enrollmentNo: data.enrollmentNo.trim(),
         programName: data.programName.trim(),
         rollNo: data.rollNo.trim(),
-        admissionBatch: data.admissionBatch.trim(),
+        admissionBatch: data.admissionBatch,
         studentPhoto: data.studentPhoto,
         courseId: Number(data.courseId),
       };
-      const res = await studentRegistration(submissionData);
-
+      await studentRegistration(submissionData);
       toast.success("Student registered successfully!");
 
       navigate("/");
-    } catch (err) {
-      // axios error
-      if (err.response) {
-        const status = err.response.status;
-
-        if (status === 400) {
-          const msg = err.response.data?.message || "You already registered!";
-          toast.error(msg);
-          setAlreadyRegistered(true);
-          return;
-        }
-
-        if (status === 409) {
-          toast.error(
-            "Email, phone, enrollment, or roll number already exists",
-          );
-          return;
-        }
-      }
-
+    } catch (error) {
       toast.error("Registration failed. Please try again.");
+
+      if (error.message.includes("could not execute statement")) {
+        toast.error("Email Already registered!", {
+          duration: 10000,
+        });
+      }
     }
   };
 
-  if (alreadyRegistered) {
-    return (
-      <div className="flex justify-center items-center min-h-screen bg-gray-50">
-        <div className="p-8 text-center bg-white rounded-lg shadow-md max-w-md">
-          <div className="mb-4">
-            <svg
-              className="w-16 h-16 text-green-500 mx-auto"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
-              />
-            </svg>
-          </div>
-          <h2 className="text-2xl font-bold text-green-600 mb-2">
-            Registration Already Submitted
-          </h2>
-          <p className="text-gray-600">
-            You've already completed your registration form.
-          </p>
-        </div>
-      </div>
-    );
-  }
-
   return (
     <>
-      <Navbar />
       <div className="">
         <div>
           <div className="text-center mt-8">

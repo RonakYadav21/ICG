@@ -13,42 +13,44 @@ import { AuthProvider } from "./context/AuthContext";
 import ErrorPage from "./pages/ErrorPage";
 import PendingAdmins from "./pages/PendingAdmins";
 import AddCourse from "./pages/AddCourses";
+import AdminLayout from "./pages/AdminLayout";
+import Navbar from "./components/UI/Navbar";
+import Footer from "./components/UI/Footer";
+import EditorPage from "./pages/EditorPage";
+import AdminDashboardPreview from "./pages/AdminDashboardPreview";
 const App = () => {
   return (
     <Router>
       <AuthProvider>
+        <Navbar />
         <Routes>
           <Route path="/" element={<HomePage />} />
           <Route path="/login" element={<Login />} />
           <Route path="/signup" element={<Signup />} />
           <Route path="/about" element={<About />} />
           <Route path="/contact" element={<Contact />} />
-          <Route path="/student-registration" element={<StudentDashboard />} />
-          <Route
-            path="/admin-dashboard/pending-admins"
-            element={<PendingAdmins />}
-          />
 
+          {/* PROTECTED ROUTES */}
           <Route
             path="/admin-dashboard"
             element={
               <ProtectedRoute>
-                <AdminDashboard />
+                <AdminLayout />
               </ProtectedRoute>
             }
-          />
-          <Route path="/admin-dashboard/add-course" element={<AddCourse />} />
+          >
+            <Route path="" element={<AdminDashboard />} />
+            <Route path="pending-admins" element={<PendingAdmins />} />
+            <Route path="add-course" element={<AddCourse />} />
+            <Route path="student-details" element={<StudentDetailPage />} />
+            <Route path="templates" element={<AdminDashboardPreview />} />
+            <Route path="templates/:id" element={<EditorPage />} />
+            <Route path="editor" element={<EditorPage />} />
+          </Route>
 
-          <Route
-            path="/admin-dashboard/student-details"
-            element={
-              <ProtectedRoute>
-                <StudentDetailPage />
-              </ProtectedRoute>
-            }
-          />
           <Route path="*" element={<ErrorPage />} />
         </Routes>
+        <Footer />
       </AuthProvider>
     </Router>
   );

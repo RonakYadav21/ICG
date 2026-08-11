@@ -1,167 +1,71 @@
-import React, { useState, useEffect } from "react";
-import { getAllCourses, getStudentsByCourse } from "../api/templatesApi";
+import { useEffect, useState } from "react";
 import { toast } from "react-hot-toast";
-import Navbar from "../components/UI/Navbar";
-import Footer from "../components/UI/Footer";
-import Sidebar from "../components/Sidebar";
-import { FaSpinner } from "react-icons/fa";
+import CourseSelector from "../components/Students/CourseSelector";
+import StudentTable from "../components/Students/StudentTable";
+import { getAllCourses, getStudentsByCourse } from "../api/templatesApi";
 
-const StudentDetailPage = () => {
+export default function StudentDetailPage() {
   const [courses, setCourses] = useState([]);
-  const [selectedCourseId, setSelectedCourseId] = useState(null);
+  const [courseId, setCourseId] = useState("");
   const [students, setStudents] = useState([]);
   const [loadingCourses, setLoadingCourses] = useState(true);
   const [loadingStudents, setLoadingStudents] = useState(false);
-
-  // Fetch all courses
   useEffect(() => {
-    const fetchCourses = async () => {
-      try {
-        setLoadingCourses(true);
-        const data = await getAllCourses();
-        setCourses(data);
-      } catch (err) {
-        console.error(err);
-        toast.error("Failed to fetch courses");
-      } finally {
-        setLoadingCourses(false);
-      }
-    };
-    fetchCourses();
+    getAllCourses()
+      .then(setCourses)
+      .catch(() => toast.error("Failed to fetch courses"))
+      .finally(() => setLoadingCourses(false));
   }, []);
-
-  // Fetch students on course select
   useEffect(() => {
-    if (!selectedCourseId) {
+    if (!courseId) {
       setStudents([]);
       return;
     }
-
-    const fetchStudents = async () => {
-      try {
-        setLoadingStudents(true);
-        const data = await getStudentsByCourse(selectedCourseId);
-        setStudents(data);
-      } catch (err) {
-        console.error(err);
-        toast.error("Failed to fetch students");
-      } finally {
-        setLoadingStudents(false);
-      }
-    };
-    fetchStudents();
-  }, [selectedCourseId]);
+    setLoadingStudents(true);
+    getStudentsByCourse(courseId)
+      .then(setStudents)
+      .catch(() => toast.error("Failed to fetch students"))
+      .finally(() => setLoadingStudents(false));
+  }, [courseId]);
+  // There are 2 types of student in a course -> verified and unverified
+  // Show verified at top and not verified at bottom
 
   return (
-    <>
-      <Navbar />
-      <div className="flex bg-gray-50 min-h-screen">
-        <Sidebar />
-        <main className="flex-1 p-8 space-y-8">
-          {/* Header & Course Select */}
-          <div className="flex flex-col items-center gap-6">
-            <h2 className="text-3xl font-bold text-gray-800">
-              Student Details
-            </h2>
-            <div className="w-full md:w-1/2">
-              {loadingCourses ? (
-                <div className="flex items-center justify-center gap-2 text-blue-500 font-semibold">
-                  <FaSpinner className="animate-spin text-xl" />
-                  Loading courses...
-                </div>
-              ) : (
-                <select
-                  value={selectedCourseId || ""}
-                  onChange={(e) => setSelectedCourseId(e.target.value)}
-                  className="w-full text-center text-lg font-semibold border border-gray-300 rounded-lg px-6 py-3 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
-                >
-                  <option value="">-- Select a course --</option>
-                  {courses.map((course) => (
-                    <option key={course.id} value={course.courseId}>
-                      {course.courseName}
-                    </option>
-                  ))}
-                </select>
-              )}
-            </div>
-          </div>
-
-          {/* Student Table */}
-          <div className="bg-white rounded-lg shadow overflow-x-auto">
-            {loadingStudents ? (
-              <div className="flex justify-center items-center h-64 text-blue-500 text-lg font-semibold">
-                <FaSpinner className="animate-spin mr-2 text-xl" />
-                Loading students...
-              </div>
-            ) : students.length === 0 ? (
-              <div className="flex justify-center items-center h-64 text-gray-500 font-medium">
-                No students found for this course.
-              </div>
-            ) : (
-              <table className="min-w-full table-auto">
-                <thead className="bg-primary text-white">
-                  <tr>
-                    <th className="px-6 py-3 text-center text-lg font-medium uppercase tracking-wider">
-                      Name
-                    </th>
-                    <th className="px-6 py-3 text-center text-lg font-medium uppercase tracking-wider">
-                      Roll No
-                    </th>
-                    <th className="px-6 py-3 text-center text-lg font-medium uppercase tracking-wider">
-                      Email
-                    </th>
-                    <th className="px-6 py-3 text-center text-lg font-medium uppercase tracking-wider">
-                      Phone
-                    </th>
-                    <th className="px-6 py-3 text-center text-lg font-medium uppercase tracking-wider">
-                      Admission Batch
-                    </th>
-                    <th className="px-6 py-3 text-center text-lg font-medium uppercase tracking-wider">
-                      Course ID
-                    </th>
-                    <th className="px-6 py-3 text-center text-lg font-medium uppercase tracking-wider">
-                      Program Name
-                    </th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-gray-200">
-                  {students.map((student) => (
-                    <tr
-                      key={student.id}
-                      className="hover:bg-blue-50 transition duration-150"
-                    >
-                      <td className="px-6 py-4 text-center text-gray-800 font-medium">
-                        {student.firstName} {student.lastName}
-                      </td>
-                      <td className="px-6 py-4 text-center text-gray-700">
-                        {student.rollNo}
-                      </td>
-                      <td className="px-6 py-4 text-center text-gray-700">
-                        {student.emailAddress}
-                      </td>
-                      <td className="px-6 py-4 text-center text-gray-700">
-                        {student.phoneNo}
-                      </td>
-                      <td className="px-6 py-4 text-center text-gray-700">
-                        {student.admissionBatch}
-                      </td>
-                      <td className="px-6 py-4 text-center text-gray-700">
-                        {student.courseId}
-                      </td>
-                      <td className="px-6 py-4 text-center text-gray-700">
-                        {student.programName}
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            )}
-          </div>
-        </main>
+    <main className="mx-auto max-w-7xl px-6 py-10 md:px-10">
+      <div className="mb-8">
+        <p className="text-xs font-semibold uppercase tracking-[0.18em] text-[#a55c37]">
+          Student directory
+        </p>
+        <h1 className="mt-2 font-heading text-4xl text-heading">
+          Find students by course
+        </h1>
+        <p className="mt-2 text-[#7a6256]">
+          Review enrollment and contact information before generating ID cards.
+        </p>
       </div>
-      <Footer />
-    </>
+      <section className="rounded-[28px] border border-[#e9c9b0] bg-[#fff8f0] p-5 shadow-sm">
+        <div className="max-w-md">
+          <CourseSelector
+            courses={courses}
+            value={courseId}
+            onChange={setCourseId}
+            loading={loadingCourses}
+          />
+        </div>
+        <div className="mt-6 flex items-center justify-between">
+          <h2 className="font-heading text-xl text-heading">
+            Enrolled students
+          </h2>
+          {courseId && (
+            <span className="rounded-full bg-[#f9dec9] px-3 py-1 text-xs font-semibold text-[#7a4228]">
+              {students.length} students
+            </span>
+          )}
+        </div>
+        <div className="mt-4">
+          <StudentTable students={students} loading={loadingStudents} />
+        </div>
+      </section>
+    </main>
   );
-};
-
-export default StudentDetailPage;
+}

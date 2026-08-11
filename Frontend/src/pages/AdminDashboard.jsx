@@ -1,12 +1,9 @@
 import { FaUsers, FaFileAlt, FaEdit } from "react-icons/fa";
-
-import EditorPage from "./EditorPage";
 import { useNavigate } from "react-router-dom";
-import Navbar from "../components/UI/Navbar";
-import Footer from "../components/UI/Footer";
 
 import { useEffect, useState } from "react";
 import { getDashboardStats } from "../api/templatesApi";
+import StudentDetailPage from "./StudentDetailPage";
 
 const AdminDashboard = () => {
   const navigate = useNavigate();
@@ -67,68 +64,24 @@ const AdminDashboard = () => {
 
   return (
     <>
-      <Navbar />
+      <div className="relative min-h-screen overflow-x-hidden ">
+        <div className="pointer-events-none absolute -top-20 -right-24 h-80 w-80 rounded-full opacity-30 blur-3xl" />
 
-      <div className="relative min-h-screen overflow-x-hidden bg-[radial-gradient(circle_at_top_left,#f9f5ff_0%,#fef7ef_35%,#f8fbff_70%)]">
-        <div className="pointer-events-none absolute -top-20 -right-24 h-80 w-80 rounded-full bg-[conic-gradient(from_120deg,#ffb997,#ffd6a5,#bde0fe,#cdb4db)] opacity-30 blur-3xl" />
-
-        <div className="pointer-events-none absolute -bottom-32 -left-24 h-96 w-96 rounded-full bg-[radial-gradient(circle,#f7cad0_0%,#e2ece9_50%,transparent_70%)] opacity-40 blur-2xl" />
+        <div className="pointer-events-none absolute -bottom-32 -left-24 h-96 w-96 rounded-full  opacity-40 blur-2xl" />
         <main className="relative z-10 mx-auto w-full max-w-7xl px-6 py-10 md:px-10 lg:px-12 space-y-10">
-          <div className="flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between">
-            <div className="space-y-3">
-              <span className="inline-flex items-center gap-2 rounded-full border border-black/10 bg-white/70 px-4 py-1 text-xs font-semibold uppercase tracking-[0.2em] text-black/60 shadow-sm">
-                Admin Console
-              </span>
-
-              <h2 className="text-4xl font-bold text-slate-900 md:text-5xl">
-                Dashboard Overview
-              </h2>
-
-              <p className="max-w-2xl text-lg text-slate-600">
-                Keep an eye on activity, manage templates, and move students
-                through approval without the clutter.
-              </p>
-            </div>
-
-            <div className="flex flex-wrap gap-4">
-              <button
-                className="rounded-full bg-slate-900 px-6 py-3 text-sm font-semibold text-white shadow-lg shadow-slate-900/25 transition hover:-translate-y-0.5 hover:bg-slate-800"
-                onClick={() => {
-                  document.getElementById("template-editor")?.scrollIntoView({
-                    behavior: "smooth",
-                  });
-                }}
-              >
-                Open Editor
-              </button>
-              <button
-                className="rounded-full border border-emerald-600/20 bg-emerald-50 px-6 py-3 text-sm font-semibold text-emerald-700 shadow-sm transition hover:-translate-y-0.5 hover:bg-emerald-100"
-                onClick={() => navigate("/admin-dashboard/add-course")}
-              >
-                Add Course
-              </button>
-              <button
-                className="rounded-full border border-slate-900/15 bg-white/70 px-6 py-3 text-sm font-semibold text-slate-700 shadow-sm transition hover:-translate-y-0.5 hover:border-slate-900/30 hover:text-slate-900"
-                onClick={() => navigate("/admin-dashboard/student-details")}
-              >
-                Review Students
-              </button>
-            </div>
-          </div>
+          
 
           <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-4">
             {dashboardStats.map((stat) => (
               <div
                 key={stat.label}
                 onClick={stat.onClick}
-                className={`group relative overflow-hidden rounded-3xl border border-white/60 bg-white/70 p-6 shadow-[0_15px_45px_-25px_rgba(15,23,42,0.45)] backdrop-blur transition hover:-translate-y-1 hover:shadow-[0_25px_60px_-25px_rgba(15,23,42,0.45)]
+                className={`group relative overflow-hidden rounded-3xl border border-white/60 bg-white/70 p-6 shadow-[0_15px_45px_-25px_rgba(15,23,42,0.45)] backdrop-blur transition hover:-translate-y-1 
                 
                 ${stat.onClick ? "cursor-pointer" : ""}
                 `}
               >
-                <div
-                  className={`absolute inset-0 bg-gradient-to-br ${stat.tone} opacity-0 transition group-hover:opacity-100`}
-                />
+                <div className={`absolute inset-0 `} />
 
                 <div className="relative flex items-center justify-between">
                   <div>
@@ -159,32 +112,10 @@ const AdminDashboard = () => {
               </div>
             ))}
           </div>
-
-          <div
-            id="template-editor"
-            className="rounded-3xl border border-white/70 bg-white/85 p-8 shadow-[0_20px_50px_-30px_rgba(15,23,42,0.45)] backdrop-blur"
-          >
-            <div className="flex flex-wrap items-center justify-between gap-3">
-              <h3 className="text-2xl font-semibold text-slate-900">
-                ID Card Template Editor
-              </h3>
-
-              <span className="rounded-full bg-slate-900/5 px-4 py-1 text-xs font-semibold uppercase tracking-[0.2em] text-slate-500">
-                Live workspace
-              </span>
-            </div>
-
-            <p className="mt-2 text-sm text-slate-600">
-              Build and preview templates in real time. Save drafts before
-              exporting a batch.
-            </p>
-
-            <EditorPage />
-          </div>
         </main>
-      </div>
 
-      <Footer />
+        <StudentDetailPage />
+      </div>
     </>
   );
 };

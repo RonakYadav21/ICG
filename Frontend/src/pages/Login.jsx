@@ -26,15 +26,20 @@ export default function Login() {
         username: formData.email,
         password: formData.password,
       });
-      // console.log(res);
 
       const data = res.data;
       login(data.token);
-     
+
       toast.success("Login successfully!");
       navigate("/admin-dashboard");
     } catch (err) {
-      console.log(err);
+      if (err.response?.status === 403) {
+        toast.error("Your account is pending approval");
+      } else if (err.response?.status === 401) {
+        toast.error("Invalid email or password");
+      } else {
+        toast.error("Something went wrong");
+      }
       toast.error(err.response?.data?.message || "Login failed");
     }
   };

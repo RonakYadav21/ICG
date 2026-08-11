@@ -1,12 +1,9 @@
 import React from "react";
-import Navbar from "../components/UI/Navbar";
-import Footer from "../components/UI/Footer";
 import saara_img from "../assets/saara_2.jpeg";
 import ronak_img from "../assets/ronak.jpeg";
 const Contact = () => {
   return (
     <div>
-      <Navbar />
 
       {/* CONTACT SECTION */}
       <section className="w-full px-20 py-24 bg-white text-text">
@@ -196,7 +193,6 @@ const Contact = () => {
         </div>
       </section>
 
-      <Footer />
     </div>
   );
 };
